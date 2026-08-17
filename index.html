@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Plan personal e interactivo para AWS Certified Cloud Practitioner CLF-C02.">
+  <title>AWS Cloud Practitioner · Study Hub</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#0f766e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="AWS CLF-C02">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#/inicio" aria-label="Ir al inicio">
+      <span class="brand-mark" aria-hidden="true">☁</span>
+      <span><strong>AWS Cloud Practitioner</strong><small>CLF-C02 · Study Hub</small></span>
+    </a>
+    <nav aria-label="Navegación principal">
+      <a href="#/inicio">Inicio</a>
+      <a href="#/practicar">Practicar</a>
+      <a href="#/chuleta">Repaso</a>
+    </nav>
+    <button class="text-button" id="resetProgress" type="button">Reiniciar progreso</button>
+  </header>
+
+  <main id="app" tabindex="-1"></main>
+
+  <footer>
+    <p>Herramienta personal de estudio, no afiliada a AWS. Los nombres de servicios son marcas de Amazon Web Services.</p>
+    <a href="https://docs.aws.amazon.com/aws-certification/latest/cloud-practitioner-02/cloud-practitioner-02.html" target="_blank" rel="noreferrer">Guía oficial CLF-C02 ↗</a>
+  </footer>
+
+  <script src="data/cloud-practitioner.js"></script>
+  <script src="app.js"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", function () {
+        navigator.serviceWorker.register("sw.js").catch(function () { /* Offline support is optional; ignore registration errors. */ });
+      });
+    }
+  </script>
+</body>
+</html>

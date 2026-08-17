@@ -1,0 +1,20 @@
+{
+  "name": "AWS Cloud Practitioner · Study Hub",
+  "short_name": "AWS CLF-C02",
+  "description": "Plan personal e interactivo para el examen AWS Certified Cloud Practitioner CLF-C02.",
+  "lang": "es",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#faf8f4",
+  "theme_color": "#0f766e",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -273,25 +273,32 @@
     if (rem <= 0) { stopExamTimer(); submitExam(true); }
   }
 
-  function selectExamQuestions() {
+  function selectExamQuestions(seen) {
     const total = data.exam.questionCount || 65;
     const weights = { 1: 0.24, 2: 0.30, 3: 0.34, 4: 0.12 };
     const byDomain = { 1: [], 2: [], 3: [], 4: [] };
     data.questions.forEach(qn => { if (byDomain[qn.domain]) byDomain[qn.domain].push(qn.id); });
+    // Baraja primero y luego ordena por "visto hace más tiempo" para rotar las preguntas entre intentos.
+    const rank = ids => shuffle(ids).sort((a, b) => (seen[a] || 0) - (seen[b] || 0));
     let picked = [];
     [1, 2, 3, 4].forEach(d => {
       const target = Math.round(total * weights[d]);
-      picked = picked.concat(shuffle(byDomain[d]).slice(0, Math.min(target, byDomain[d].length)));
+      picked = picked.concat(rank(byDomain[d]).slice(0, Math.min(target, byDomain[d].length)));
     });
     const chosen = new Set(picked);
-    const remaining = shuffle(data.questions.map(qn => qn.id).filter(id => !chosen.has(id)));
-    while (picked.length < total && remaining.length) picked.push(remaining.pop());
+    const remaining = rank(data.questions.map(qn => qn.id).filter(id => !chosen.has(id)));
+    while (picked.length < total && remaining.length) picked.push(remaining.shift());
     return shuffle(picked).slice(0, total);
   }
 
   function startExam() {
     const state = loadExam();
-    state.active = { ids: selectExamQuestions(), answers: {}, flags: {}, index: 0, startedAt: Date.now(), durationMin: data.exam.durationMinutes || 90, submittedAt: null };
+    if (!state.seen) state.seen = {};
+    const ids = selectExamQuestions(state.seen);
+    const now = Date.now();
+    const optOrder = {};
+    ids.forEach(id => { state.seen[id] = now; const qn = byId(id); optOrder[id] = shuffle(qn.options.map((_, i) => i)); });
+    state.active = { ids, optOrder, answers: {}, flags: {}, index: 0, startedAt: now, durationMin: data.exam.durationMinutes || 90, submittedAt: null };
     saveExam(state);
     renderExam();
   }
@@ -368,6 +375,7 @@
     const chosen = a.answers[id];
     const flagged = !!a.flags[id];
     const rem = examRemaining(a);
+    const order = a.optOrder && a.optOrder[id] ? a.optOrder[id] : question.options.map((_, i) => i);
     app.innerHTML = `
       <section class="exam-bar">
         <div class="exam-clock ${rem < 300000 ? "urgent" : ""}"><span>Tiempo</span><strong id="examTimer">${formatClock(rem)}</strong></div>
@@ -379,7 +387,7 @@
           <div class="question-meta"><span>Pregunta ${idx + 1} de ${a.ids.length} · Dominio ${question.domain}</span><button type="button" class="flag-btn ${flagged ? "on" : ""}" data-action="exam-flag">${flagged ? "🚩 Marcada" : "⚐ Marcar"}</button></div>
           <h1>${escapeHtml(question.prompt)}</h1>
           <div class="answers" role="group" aria-label="Opciones">
-            ${question.options.map((opt, i) => `<button type="button" class="answer ${chosen === i ? "selected" : ""}" data-action="exam-answer" data-choice="${i}"><b>${String.fromCharCode(65 + i)}</b><span>${escapeHtml(opt)}</span></button>`).join("")}
+            ${order.map((origIdx, pos) => `<button type="button" class="answer ${chosen === origIdx ? "selected" : ""}" data-action="exam-answer" data-choice="${origIdx}"><b>${String.fromCharCode(65 + pos)}</b><span>${escapeHtml(question.options[origIdx])}</span></button>`).join("")}
           </div>
           <div class="exam-move">
             <button class="button secondary" type="button" data-action="exam-prev" ${idx === 0 ? "disabled" : ""}>← Anterior</button>

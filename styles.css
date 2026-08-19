@@ -197,6 +197,11 @@ button:focus-visible, a:focus-visible { outline: 3px solid var(--amber); outline
 .practice-domains .domain-card { transition: transform .15s ease, box-shadow .15s ease; }
 .practice-domains .domain-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
 
+/* ---- Exportar resultados ---- */
+.export-row { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; margin: 0 0 44px; padding: 20px 24px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface-2); }
+.export-row strong { display: block; font-size: 15px; }
+.export-row span { display: block; margin-top: 3px; color: var(--muted); font-size: 13px; max-width: 560px; }
+
 /* ---- Aprender ---- */
 .learn-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 40px; }
 .learn-card { padding: 26px; border-radius: 16px; color: var(--card-ink); transition: transform .15s ease, box-shadow .15s ease; }

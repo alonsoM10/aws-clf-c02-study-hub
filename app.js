@@ -110,6 +110,11 @@
         <article><span>Precisión acumulada</span><strong>${answers.length ? percent + "%" : "—"}</strong><small>meta de práctica: 75% o más</small></article>
       </section>
 
+      <section class="export-row">
+        <div><strong>¿Quieres feedback personalizado?</strong><span>Descarga tus resultados y las preguntas que fallaste, y envíaselos a tu tutor para saber qué reforzar.</span></div>
+        <button class="button secondary" type="button" data-action="export-report">⬇ Descargar resultados (.md)</button>
+      </section>
+
       <section class="section-heading">
         <div><p class="kicker">MODOS DE ESTUDIO</p><h2>Elige cómo estudiar hoy</h2><p>Teoría clara, tarjetas rápidas o un examen completo cronometrado.</p></div>
       </section>
@@ -221,7 +226,7 @@
     const correct = choice === question.correct;
     activeQuiz.selections[activeQuiz.index] = { choice, correct };
     const summary = progressSummary();
-    summary.progress.answers.push({ id: question.id, focus: question.focus, domain: question.domain, correct, date: new Date().toISOString() });
+    summary.progress.answers.push({ id: question.id, focus: question.focus, domain: question.domain, correct, choice, date: new Date().toISOString() });
     summary.progress.lastFocus = question.focus;
     summary.progress.lastStudyDate = new Date().toISOString();
     saveProgress(summary.progress);
@@ -445,6 +450,7 @@
       </section>
       <section class="exam-actions-row">
         <button class="button primary" type="button" data-action="exam-new">Hacer otro examen</button>
+        <button class="button secondary" type="button" data-action="export-report">⬇ Descargar resultados</button>
         ${weakDomains.length ? weakDomains.map(d => `<a class="button secondary" href="#/practicar/dom${d}">Reforzar D${d} →</a>`).join("") : `<a class="button secondary" href="#/practicar">Ir a practicar →</a>`}
       </section>
       <section class="review">
@@ -511,6 +517,87 @@
       </section>`;
   }
 
+  function focusTitle(id) {
+    const area = data.focusAreas.find(item => item.id === id);
+    return area ? area.title : id;
+  }
+
+  function buildReport() {
+    const progress = loadProgress();
+    const answers = progress.answers || [];
+    const exam = loadExam();
+    const L = [];
+    L.push("# Reporte de estudio · AWS CLF-C02");
+    L.push("");
+    L.push("Generado: " + new Date().toLocaleString("es") + "  ·  Examen objetivo: 1 de septiembre de 2026 (" + daysToExam() + " días restantes)");
+    L.push("");
+    const total = answers.length;
+    const correct = answers.filter(a => a.correct).length;
+    L.push("## Resumen de práctica");
+    L.push("- Preguntas respondidas: " + total);
+    L.push("- Aciertos: " + correct + (total ? " (" + Math.round(correct / total * 100) + "%)" : ""));
+    L.push("");
+    L.push("### Precisión por dominio");
+    [1, 2, 3, 4].forEach(d => {
+      const dom = answers.filter(a => a.domain === d);
+      if (dom.length) { const c = dom.filter(a => a.correct).length; L.push("- D" + d + " " + domainName(d) + ": " + c + "/" + dom.length + " (" + Math.round(c / dom.length * 100) + "%)"); }
+    });
+    L.push("");
+    L.push("### Precisión por tema");
+    data.focusAreas.forEach(f => {
+      const fa = answers.filter(a => a.focus === f.id);
+      if (fa.length) { const c = fa.filter(a => a.correct).length; L.push("- " + f.title + ": " + c + "/" + fa.length + " (" + Math.round(c / fa.length * 100) + "%)"); }
+    });
+    L.push("");
+    if (exam.history && exam.history.length) {
+      L.push("## Historial de exámenes");
+      exam.history.forEach(h => { L.push("- " + new Date(h.date).toLocaleDateString("es") + ": " + h.correct + "/" + h.total + " (" + h.scaled + "/1000) — " + (h.passed ? "Aprobado" : "No aprobado")); });
+      L.push("");
+    }
+    const wrong = {};
+    const latest = {};
+    answers.forEach(a => { latest[a.id] = a; });
+    Object.keys(latest).forEach(id => { const a = latest[id]; if (!a.correct) wrong[id] = { choice: a.choice }; });
+    if (exam.active && exam.active.submittedAt) {
+      exam.active.ids.forEach(id => { const ch = exam.active.answers[id]; const q = byId(id); if (q && ch !== q.correct) wrong[id] = { choice: ch }; });
+    }
+    const wrongIds = Object.keys(wrong);
+    L.push("## Preguntas que fallé (" + wrongIds.length + ")");
+    L.push("");
+    if (!wrongIds.length) L.push("_No hay preguntas falladas registradas. ¡Bien!_");
+    wrongIds.forEach((id, i) => {
+      const q = byId(id); if (!q) return;
+      const ch = wrong[id].choice;
+      L.push((i + 1) + ". **[D" + q.domain + " · " + focusTitle(q.focus) + "]** " + q.prompt);
+      if (ch !== undefined && ch !== null) L.push("   - Tu respuesta: " + String.fromCharCode(65 + ch) + ") " + q.options[ch]);
+      L.push("   - Correcta: " + String.fromCharCode(65 + q.correct) + ") " + q.options[q.correct]);
+      L.push("   - Por qué: " + q.explanation);
+      L.push("");
+    });
+    L.push("---");
+    L.push("Enviarle este archivo a mi tutor y pedir: \"¿qué me falta y cómo lo refuerzo?\".");
+    return L.join("\n");
+  }
+
+  function downloadReport() {
+    const progress = loadProgress();
+    const exam = loadExam();
+    if ((!progress.answers || !progress.answers.length) && (!exam.history || !exam.history.length)) {
+      alert("Aún no hay resultados guardados. Responde algunas preguntas o haz un examen y vuelve a exportar.");
+      return;
+    }
+    const md = buildReport();
+    const blob = new Blob([md], { type: "text/markdown;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "resultados-clf-c02-" + new Date().toISOString().slice(0, 10) + ".md";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
   function render() {
     const route = location.hash || "#/inicio";
     linkActive(route);
@@ -546,6 +633,7 @@
     if (target.dataset.action === "flash-known") { if (activeDeck) { const card = activeDeck.cards[activeDeck.index]; const f = loadFlash(); if (f.known[card.front]) delete f.known[card.front]; else f.known[card.front] = true; saveFlash(f); renderFlash(location.hash); } }
     if (target.dataset.action === "flash-review") { if (activeDeck) { const card = activeDeck.cards[activeDeck.index]; const f = loadFlash(); delete f.known[card.front]; saveFlash(f); activeDeck.index = (activeDeck.index + 1) % activeDeck.cards.length; activeDeck.flipped = false; renderFlash(location.hash); } }
     if (target.dataset.action === "flash-reset") { const f = loadFlash(); f.known = {}; saveFlash(f); activeDeck = null; renderFlash(location.hash); }
+    if (target.dataset.action === "export-report") downloadReport();
   });
 
   const themeBtn = document.getElementById("themeToggle");

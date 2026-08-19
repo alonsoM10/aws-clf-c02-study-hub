@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Plan personal e interactivo para AWS Certified Cloud Practitioner CLF-C02.">
   <title>AWS Cloud Practitioner · Study Hub</title>
+  <script>(function () { try { var t = localStorage.getItem("clf-c02-theme"); if (!t) { t = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"; } document.documentElement.setAttribute("data-theme", t); } catch (e) { /* Default theme if storage is unavailable. */ } }());</script>
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#0f766e">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -26,11 +27,15 @@
     <nav aria-label="Navegación principal">
       <a href="#/inicio">Inicio</a>
       <a href="#/aprender">Aprender</a>
+      <a href="#/tarjetas">Tarjetas</a>
       <a href="#/practicar">Practicar</a>
       <a href="#/examen">Examen</a>
       <a href="#/chuleta">Repaso</a>
     </nav>
-    <button class="text-button" id="resetProgress" type="button">Reiniciar progreso</button>
+    <div class="top-actions">
+      <button class="text-button theme-toggle" id="themeToggle" type="button" aria-label="Cambiar entre modo claro y oscuro">🌙 Oscuro</button>
+      <button class="text-button" id="resetProgress" type="button">Reiniciar progreso</button>
+    </div>
   </header>
 
   <main id="app" tabindex="-1"></main>

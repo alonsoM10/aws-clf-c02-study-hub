@@ -5,8 +5,21 @@
   const app = document.getElementById("app");
   const storageKey = "clf-c02-study-hub-progress-v1";
   const examKey = "clf-c02-exam-v1";
+  const flashKey = "clf-c02-flash-v1";
+  const themeKey = "clf-c02-theme";
   let activeQuiz = null;
   let examTimerId = null;
+  let activeDeck = null;
+
+  function applyTheme(theme) {
+    document.documentElement.setAttribute("data-theme", theme);
+    try { localStorage.setItem(themeKey, theme); } catch (_) { /* Ignore storage errors. */ }
+    const btn = document.getElementById("themeToggle");
+    if (btn) btn.textContent = theme === "dark" ? "☀️ Claro" : "🌙 Oscuro";
+  }
+  function currentTheme() {
+    return document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+  }
 
   function byId(id) {
     return data.questions.find(question => question.id === id);
@@ -95,6 +108,15 @@
         <article><span>Preguntas respondidas</span><strong>${answers.length}</strong><small>el progreso queda guardado aquí</small></article>
         <article><span>Respuestas correctas</span><strong>${correct}</strong><small>${answers.length ? "de " + answers.length + " intentos" : "comienza con una sesión"}</small></article>
         <article><span>Precisión acumulada</span><strong>${answers.length ? percent + "%" : "—"}</strong><small>meta de práctica: 75% o más</small></article>
+      </section>
+
+      <section class="section-heading">
+        <div><p class="kicker">MODOS DE ESTUDIO</p><h2>Elige cómo estudiar hoy</h2><p>Teoría clara, tarjetas rápidas o un examen completo cronometrado.</p></div>
+      </section>
+      <section class="focus-grid">
+        <a class="focus-card" href="#/aprender"><div><span class="pill important">Teoría</span></div><h3>Aprender</h3><p>Los 4 dominios explicados en simple, con un truco de examen en cada tema.</p><span class="card-cta">Ir a Aprender →</span></a>
+        <a class="focus-card" href="#/tarjetas"><div><span class="pill important">Memoria</span></div><h3>Tarjetas</h3><p>Servicio → qué hace y su palabra gatillo. Voltea la tarjeta y comprueba.</p><span class="card-cta">Ir a Tarjetas →</span></a>
+        <a class="focus-card" href="#/examen"><div><span class="pill critical">Simulacro</span></div><h3>Examen</h3><p>65 preguntas cronometradas con la distribución real del examen.</p><span class="card-cta">Ir a Examen →</span></a>
       </section>
 
       <section class="section-heading">
@@ -431,11 +453,70 @@
       </section>`;
   }
 
+  function loadFlash() {
+    try { const saved = JSON.parse(localStorage.getItem(flashKey)); if (saved && saved.known) return saved; } catch (_) { /* Clean slate on invalid data. */ }
+    return { known: {} };
+  }
+  function saveFlash(state) { localStorage.setItem(flashKey, JSON.stringify(state)); }
+
+  function startDeck(cat) {
+    let pool = data.flashcards.slice();
+    if (cat === "repasar") { const known = loadFlash().known; pool = pool.filter(card => !known[card.front]); }
+    else if (cat && cat !== "todas") pool = pool.filter(card => card.cat === cat);
+    activeDeck = { cat: cat || "todas", cards: shuffle(pool), index: 0, flipped: false };
+  }
+
+  function renderFlash(route) {
+    const parts = route.split("/");
+    const cat = parts[2] ? decodeURIComponent(parts[2]) : "todas";
+    if (!activeDeck || activeDeck.cat !== cat) startDeck(cat);
+    const deck = activeDeck;
+    const flash = loadFlash();
+    const cats = [...new Set(data.flashcards.map(card => card.cat))];
+    const knownCount = data.flashcards.filter(card => flash.known[card.front]).length;
+    const filters = `
+      <div class="flash-filters">
+        <a class="chip ${cat === "todas" ? "on" : ""}" href="#/tarjetas">Todas</a>
+        <a class="chip ${cat === "repasar" ? "on" : ""}" href="#/tarjetas/repasar">Por repasar</a>
+        ${cats.map(c => `<a class="chip ${cat === c ? "on" : ""}" href="#/tarjetas/${encodeURIComponent(c)}">${escapeHtml(c)}</a>`).join("")}
+      </div>`;
+    if (!deck.cards.length) {
+      app.innerHTML = `
+        <section class="page-intro compact"><p class="kicker">TARJETAS</p><h1>¡Todo dominado aquí!</h1><p>No quedan tarjetas por repasar en este filtro. Cambia de categoría o reinicia el repaso.</p></section>
+        <section class="flash-top"><span class="flash-progress">${knownCount}/${data.flashcards.length} dominadas</span>${filters}</section>
+        <section class="flash-done panel" style="padding:34px"><button class="button primary" type="button" data-action="flash-reset">Reiniciar tarjetas dominadas</button></section>`;
+      return;
+    }
+    const card = deck.cards[deck.index];
+    const isKnown = !!flash.known[card.front];
+    app.innerHTML = `
+      <section class="page-intro compact"><p class="kicker">TARJETAS</p><h1>Memoriza los servicios<br><em>y sus palabras gatillo.</em></h1><p>Mira el servicio, intenta recordar qué hace y qué pista lo delata, y voltea la tarjeta para comprobar.</p></section>
+      <section class="flash-top"><span class="flash-progress">Tarjeta ${deck.index + 1} / ${deck.cards.length} · ${knownCount}/${data.flashcards.length} dominadas</span>${filters}</section>
+      <section class="flash-stage">
+        <div class="flashcard ${deck.flipped ? "flipped" : ""}" data-action="flash-flip" role="button" tabindex="0" aria-label="Voltear tarjeta">
+          <div class="fc-inner">
+            <div class="fc-face fc-front"><p class="fc-cat">${escapeHtml(card.cat)}</p><h2>${escapeHtml(card.front)}</h2><p class="fc-hint">Toca para ver la respuesta ↻</p></div>
+            <div class="fc-face fc-back"><p class="fc-label">QUÉ ES / CUÁNDO USARLO</p><p>${escapeHtml(card.back)}</p>${card.trigger ? `<p class="fc-trigger"><b>💡 Gatillo:</b> ${escapeHtml(card.trigger)}</p>` : ""}</div>
+          </div>
+        </div>
+      </section>
+      <section class="flash-actions">
+        <button class="button secondary" type="button" data-action="flash-prev">← Anterior</button>
+        <button class="button primary" type="button" data-action="flash-flip">Voltear ↻</button>
+        <button class="button secondary" type="button" data-action="flash-next">Siguiente →</button>
+      </section>
+      <section class="flash-known">
+        <button class="icon-btn" type="button" data-action="flash-review" title="Marcar para repasar" aria-label="Marcar para repasar">↺</button>
+        <button class="chip ${isKnown ? "on" : ""}" type="button" data-action="flash-known">${isKnown ? "✓ Ya la sé" : "Marcar como sabida"}</button>
+      </section>`;
+  }
+
   function render() {
     const route = location.hash || "#/inicio";
     linkActive(route);
     stopExamTimer();
     if (route.startsWith("#/practicar")) renderPractice(route);
+    else if (route.startsWith("#/tarjetas")) renderFlash(route);
     else if (route.startsWith("#/aprender/")) renderLearnDomain(Number(route.split("/")[2]));
     else if (route === "#/aprender") renderLearnHome();
     else if (route === "#/examen") renderExam();
@@ -459,18 +540,30 @@
     if (target.dataset.action === "exam-goto") { const s = loadExam(); const a = s.active; if (a) { a.index = Number(target.dataset.idx); saveExam(s); renderExam(); } }
     if (target.dataset.action === "exam-submit") submitExam(false);
     if (target.dataset.action === "exam-new") { const s = loadExam(); s.active = null; saveExam(s); window.scrollTo(0, 0); renderExam(); }
+    if (target.dataset.action === "flash-flip") { if (activeDeck) { activeDeck.flipped = !activeDeck.flipped; renderFlash(location.hash); } }
+    if (target.dataset.action === "flash-next") { if (activeDeck) { activeDeck.index = (activeDeck.index + 1) % activeDeck.cards.length; activeDeck.flipped = false; renderFlash(location.hash); } }
+    if (target.dataset.action === "flash-prev") { if (activeDeck) { activeDeck.index = (activeDeck.index - 1 + activeDeck.cards.length) % activeDeck.cards.length; activeDeck.flipped = false; renderFlash(location.hash); } }
+    if (target.dataset.action === "flash-known") { if (activeDeck) { const card = activeDeck.cards[activeDeck.index]; const f = loadFlash(); if (f.known[card.front]) delete f.known[card.front]; else f.known[card.front] = true; saveFlash(f); renderFlash(location.hash); } }
+    if (target.dataset.action === "flash-review") { if (activeDeck) { const card = activeDeck.cards[activeDeck.index]; const f = loadFlash(); delete f.known[card.front]; saveFlash(f); activeDeck.index = (activeDeck.index + 1) % activeDeck.cards.length; activeDeck.flipped = false; renderFlash(location.hash); } }
+    if (target.dataset.action === "flash-reset") { const f = loadFlash(); f.known = {}; saveFlash(f); activeDeck = null; renderFlash(location.hash); }
   });
 
+  const themeBtn = document.getElementById("themeToggle");
+  if (themeBtn) themeBtn.addEventListener("click", () => applyTheme(currentTheme() === "dark" ? "light" : "dark"));
+
   document.getElementById("resetProgress").addEventListener("click", () => {
-    if (confirm("¿Quieres borrar todas las respuestas, estadísticas y exámenes guardados en este navegador?")) {
+    if (confirm("¿Quieres borrar todas las respuestas, estadísticas, exámenes y tarjetas guardadas en este navegador?")) {
       localStorage.removeItem(storageKey);
       localStorage.removeItem(examKey);
+      localStorage.removeItem(flashKey);
       activeQuiz = null;
+      activeDeck = null;
       stopExamTimer();
       render();
     }
   });
 
+  applyTheme(currentTheme());
   window.addEventListener("hashchange", render);
   render();
 }());

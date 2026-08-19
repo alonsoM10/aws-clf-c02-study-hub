@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_NAME = "clf-c02-study-hub-v2";
+const CACHE_NAME = "clf-c02-study-hub-v3";
 
 const CORE_ASSETS = [
   "./",
@@ -26,18 +26,17 @@ self.addEventListener("activate", event => {
   );
 });
 
+// Network-first: con conexión, siempre trae lo más reciente y lo guarda en caché.
+// Sin conexión, sirve la última versión guardada (para estudiar en el metro).
 self.addEventListener("fetch", event => {
   const request = event.request;
   if (request.method !== "GET") return;
 
   event.respondWith(
-    caches.match(request).then(cached => {
-      if (cached) return cached;
-      return fetch(request).then(response => {
-        const copy = response.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(request, copy)).catch(() => { /* Ignore cache write failures. */ });
-        return response;
-      }).catch(() => cached);
-    })
+    fetch(request).then(response => {
+      const copy = response.clone();
+      caches.open(CACHE_NAME).then(cache => cache.put(request, copy)).catch(() => { /* Ignore cache write failures. */ });
+      return response;
+    }).catch(() => caches.match(request).then(cached => cached || caches.match("./index.html")))
   );
 });

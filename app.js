@@ -186,7 +186,9 @@
       return dateA < dateB ? -1 : dateA > dateB ? 1 : 0;
     });
     const quantity = Math.min(cap, pool.length);
-    activeQuiz = { focus, questions: shuffle(ranked.slice(0, quantity)), index: 0, selections: [] };
+    const questions = shuffle(ranked.slice(0, quantity));
+    const orders = questions.map(question => shuffle(question.options.map((_, i) => i)));
+    activeQuiz = { focus, questions, orders, index: 0, selections: [] };
   }
 
   function renderQuiz() {
@@ -194,31 +196,33 @@
     if (quiz.index >= quiz.questions.length) return renderResults();
     const question = quiz.questions[quiz.index];
     const answered = quiz.selections[quiz.index];
+    const order = quiz.orders[quiz.index] || question.options.map((_, i) => i);
     app.innerHTML = `
       <section class="quiz-top"><a href="#/practicar" class="back-link">← Cambiar práctica</a><div><p class="kicker">${escapeHtml(quizLabel(quiz.focus))}</p><span>Pregunta ${quiz.index + 1} de ${quiz.questions.length}</span></div><div class="progress-track" aria-label="Progreso"><i style="width:${((quiz.index + (answered ? 1 : 0)) / quiz.questions.length) * 100}%"></i></div></section>
       <section class="quiz-shell panel">
         <div class="question-meta"><span>Dominio ${question.domain} · ${escapeHtml(domainName(question.domain))}</span><span>Escenario tipo examen</span></div>
         <h1>${escapeHtml(question.prompt)}</h1>
         <div class="answers" role="group" aria-label="Opciones de respuesta">
-          ${question.options.map((option, index) => answerButton(option, index, question, answered)).join("")}
+          ${order.map((origIdx, pos) => answerButton(question.options[origIdx], origIdx, pos, question, answered)).join("")}
         </div>
-        ${answered ? feedback(question, answered) : "<p class=\"answer-hint\">Elige una opción. Recibirás la explicación y el descarte completo de inmediato.</p>"}
+        ${answered ? feedback(question, answered, order) : "<p class=\"answer-hint\">Elige una opción. Recibirás la explicación y el descarte completo de inmediato.</p>"}
       </section>`;
   }
 
-  function answerButton(option, index, question, answered) {
-    const letter = String.fromCharCode(65 + index);
+  function answerButton(option, origIdx, pos, question, answered) {
+    const letter = String.fromCharCode(65 + pos);
     let className = "answer";
     if (answered) {
-      if (index === question.correct) className += " correct";
-      else if (index === answered.choice) className += " wrong";
+      if (origIdx === question.correct) className += " correct";
+      else if (origIdx === answered.choice) className += " wrong";
     }
-    return `<button type="button" class="${className}" data-action="answer" data-choice="${index}" ${answered ? "disabled" : ""}><b>${letter}</b><span>${escapeHtml(option)}</span>${answered && index === question.correct ? "<i>✓</i>" : ""}</button>`;
+    return `<button type="button" class="${className}" data-action="answer" data-choice="${origIdx}" ${answered ? "disabled" : ""}><b>${letter}</b><span>${escapeHtml(option)}</span>${answered && origIdx === question.correct ? "<i>✓</i>" : ""}</button>`;
   }
 
-  function feedback(question, answered) {
+  function feedback(question, answered, order) {
     const isCorrect = answered.choice === question.correct;
-    return `<aside class="feedback ${isCorrect ? "good" : "needs-work"}"><p class="feedback-label">${isCorrect ? "✓ Correcta" : "↗ Para reforzar"}</p><h2>${isCorrect ? "Buen razonamiento." : "La respuesta correcta es " + String.fromCharCode(65 + question.correct) + "."}</h2><p>${escapeHtml(question.explanation)}</p><details open><summary>Ver descarte de todas las opciones</summary><ol class="reasons">${question.reasons.map((reason, index) => `<li class="${index === question.correct ? "right-reason" : ""}"><b>${String.fromCharCode(65 + index)}</b>${escapeHtml(reason)}</li>`).join("")}</ol></details><button type="button" class="button primary" data-action="next">${activeQuiz.index + 1 === activeQuiz.questions.length ? "Ver resultado" : "Siguiente pregunta →"}</button></aside>`;
+    const correctPos = order.indexOf(question.correct);
+    return `<aside class="feedback ${isCorrect ? "good" : "needs-work"}"><p class="feedback-label">${isCorrect ? "✓ Correcta" : "↗ Para reforzar"}</p><h2>${isCorrect ? "Buen razonamiento." : "La respuesta correcta es " + String.fromCharCode(65 + correctPos) + "."}</h2><p>${escapeHtml(question.explanation)}</p><details open><summary>Ver descarte de todas las opciones</summary><ol class="reasons">${order.map((origIdx, pos) => `<li class="${origIdx === question.correct ? "right-reason" : ""}"><b>${String.fromCharCode(65 + pos)}</b>${escapeHtml(question.reasons[origIdx])}</li>`).join("")}</ol></details><button type="button" class="button primary" data-action="next">${activeQuiz.index + 1 === activeQuiz.questions.length ? "Ver resultado" : "Siguiente pregunta →"}</button></aside>`;
   }
 
   function recordAnswer(choice) {

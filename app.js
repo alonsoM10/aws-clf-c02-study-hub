@@ -25,6 +25,15 @@
     return data.questions.find(question => question.id === id);
   }
 
+  function isMulti(question) {
+    return Array.isArray(question.correct);
+  }
+  function setEqual(a, b) {
+    if (a.length !== b.length) return false;
+    const s = new Set(b);
+    return a.every(x => s.has(x));
+  }
+
   function quizLabel(focus) {
     if (focus === "mixed") return "DIAGNÓSTICO MIXTO";
     if (/^dom[1-4]$/.test(focus)) return domainName(Number(focus.slice(3))).toUpperCase();
@@ -188,7 +197,7 @@
     const quantity = Math.min(cap, pool.length);
     const questions = shuffle(ranked.slice(0, quantity));
     const orders = questions.map(question => shuffle(question.options.map((_, i) => i)));
-    activeQuiz = { focus, questions, orders, index: 0, selections: [] };
+    activeQuiz = { focus, questions, orders, index: 0, selections: [], pending: [] };
   }
 
   function renderQuiz() {
@@ -197,15 +206,23 @@
     const question = quiz.questions[quiz.index];
     const answered = quiz.selections[quiz.index];
     const order = quiz.orders[quiz.index] || question.options.map((_, i) => i);
+    const multi = isMulti(question);
+    const pending = quiz.pending[quiz.index] || [];
+    const metaRight = multi ? "Elige " + question.correct.length + " respuestas" : "Escenario tipo examen";
+    const footer = answered
+      ? feedback(question, answered, order)
+      : (multi
+        ? `<div class="multi-actions"><p class="answer-hint">Selecciona ${question.correct.length} opciones y pulsa Comprobar.</p><button type="button" class="button primary" data-action="check-multi" ${pending.length === question.correct.length ? "" : "disabled"}>Comprobar respuesta</button></div>`
+        : "<p class=\"answer-hint\">Elige una opción. Recibirás la explicación y el descarte completo de inmediato.</p>");
     app.innerHTML = `
       <section class="quiz-top"><a href="#/practicar" class="back-link">← Cambiar práctica</a><div><p class="kicker">${escapeHtml(quizLabel(quiz.focus))}</p><span>Pregunta ${quiz.index + 1} de ${quiz.questions.length}</span></div><div class="progress-track" aria-label="Progreso"><i style="width:${((quiz.index + (answered ? 1 : 0)) / quiz.questions.length) * 100}%"></i></div></section>
       <section class="quiz-shell panel">
-        <div class="question-meta"><span>Dominio ${question.domain} · ${escapeHtml(domainName(question.domain))}</span><span>Escenario tipo examen</span></div>
+        <div class="question-meta"><span>Dominio ${question.domain} · ${escapeHtml(domainName(question.domain))}</span><span>${escapeHtml(metaRight)}</span></div>
         <h1>${escapeHtml(question.prompt)}</h1>
         <div class="answers" role="group" aria-label="Opciones de respuesta">
-          ${order.map((origIdx, pos) => answerButton(question.options[origIdx], origIdx, pos, question, answered)).join("")}
+          ${order.map((origIdx, pos) => multi ? multiButton(question.options[origIdx], origIdx, pos, question, answered, pending) : answerButton(question.options[origIdx], origIdx, pos, question, answered)).join("")}
         </div>
-        ${answered ? feedback(question, answered, order) : "<p class=\"answer-hint\">Elige una opción. Recibirás la explicación y el descarte completo de inmediato.</p>"}
+        ${footer}
       </section>`;
   }
 
@@ -219,10 +236,51 @@
     return `<button type="button" class="${className}" data-action="answer" data-choice="${origIdx}" ${answered ? "disabled" : ""}><b>${letter}</b><span>${escapeHtml(option)}</span>${answered && origIdx === question.correct ? "<i>✓</i>" : ""}</button>`;
   }
 
+  function multiButton(option, origIdx, pos, question, answered, pending) {
+    const letter = String.fromCharCode(65 + pos);
+    let className = "answer multi";
+    let box = pending.includes(origIdx) ? "☑" : "☐";
+    if (answered) {
+      if (question.correct.includes(origIdx)) { className += " correct"; box = "☑"; }
+      else if (answered.choices.includes(origIdx)) { className += " wrong"; box = "☒"; }
+      else { box = "☐"; }
+    } else if (pending.includes(origIdx)) {
+      className += " selected";
+    }
+    return `<button type="button" class="${className}" data-action="toggle-multi" data-choice="${origIdx}" ${answered ? "disabled" : ""}><b>${letter}</b><span>${escapeHtml(option)}</span><i class="chk">${box}</i></button>`;
+  }
+
   function feedback(question, answered, order) {
-    const isCorrect = answered.choice === question.correct;
-    const correctPos = order.indexOf(question.correct);
-    return `<aside class="feedback ${isCorrect ? "good" : "needs-work"}"><p class="feedback-label">${isCorrect ? "✓ Correcta" : "↗ Para reforzar"}</p><h2>${isCorrect ? "Buen razonamiento." : "La respuesta correcta es " + String.fromCharCode(65 + correctPos) + "."}</h2><p>${escapeHtml(question.explanation)}</p><details open><summary>Ver descarte de todas las opciones</summary><ol class="reasons">${order.map((origIdx, pos) => `<li class="${origIdx === question.correct ? "right-reason" : ""}"><b>${String.fromCharCode(65 + pos)}</b>${escapeHtml(question.reasons[origIdx])}</li>`).join("")}</ol></details><button type="button" class="button primary" data-action="next">${activeQuiz.index + 1 === activeQuiz.questions.length ? "Ver resultado" : "Siguiente pregunta →"}</button></aside>`;
+    const multi = isMulti(question);
+    const isCorrect = multi ? answered.correct : (answered.choice === question.correct);
+    const correctLetters = [];
+    order.forEach((origIdx, pos) => { const ok = multi ? question.correct.includes(origIdx) : origIdx === question.correct; if (ok) correctLetters.push(String.fromCharCode(65 + pos)); });
+    const heading = isCorrect ? "Buen razonamiento." : ("Respuesta" + (correctLetters.length > 1 ? "s" : "") + " correcta" + (correctLetters.length > 1 ? "s" : "") + ": " + correctLetters.join(", ") + ".");
+    const reasonsHtml = order.map((origIdx, pos) => { const ok = multi ? question.correct.includes(origIdx) : origIdx === question.correct; return `<li class="${ok ? "right-reason" : ""}"><b>${String.fromCharCode(65 + pos)}</b>${escapeHtml(question.reasons[origIdx])}</li>`; }).join("");
+    return `<aside class="feedback ${isCorrect ? "good" : "needs-work"}"><p class="feedback-label">${isCorrect ? "✓ Correcta" : "↗ Para reforzar"}</p><h2>${escapeHtml(heading)}</h2><p>${escapeHtml(question.explanation)}</p><details open><summary>Ver descarte de todas las opciones</summary><ol class="reasons">${reasonsHtml}</ol></details><button type="button" class="button primary" data-action="next">${activeQuiz.index + 1 === activeQuiz.questions.length ? "Ver resultado" : "Siguiente pregunta →"}</button></aside>`;
+  }
+
+  function toggleMulti(origIdx) {
+    const i = activeQuiz.index;
+    const arr = (activeQuiz.pending[i] || []).slice();
+    const at = arr.indexOf(origIdx);
+    if (at >= 0) arr.splice(at, 1); else arr.push(origIdx);
+    activeQuiz.pending[i] = arr;
+    renderQuiz();
+  }
+  function checkMulti() {
+    const i = activeQuiz.index;
+    const question = activeQuiz.questions[i];
+    const chosen = (activeQuiz.pending[i] || []).slice();
+    if (chosen.length !== question.correct.length) return;
+    const correct = setEqual(chosen, question.correct);
+    activeQuiz.selections[i] = { choices: chosen, correct };
+    const summary = progressSummary();
+    summary.progress.answers.push({ id: question.id, focus: question.focus, domain: question.domain, correct, choices: chosen, date: new Date().toISOString() });
+    summary.progress.lastFocus = question.focus;
+    summary.progress.lastStudyDate = new Date().toISOString();
+    saveProgress(summary.progress);
+    renderQuiz();
   }
 
   function recordAnswer(choice) {
@@ -340,7 +398,9 @@
     a.ids.forEach(id => {
       const qn = byId(id); if (!qn) return;
       perDomain[qn.domain].t++;
-      if (a.answers[id] === qn.correct) { correct++; perDomain[qn.domain].c++; }
+      const v = a.answers[id];
+      const ok = isMulti(qn) ? (Array.isArray(v) && setEqual(v, qn.correct)) : (v === qn.correct);
+      if (ok) { correct++; perDomain[qn.domain].c++; }
     });
     const total = a.ids.length;
     const scaled = Math.round(100 + (correct / total) * 900);
@@ -402,8 +462,10 @@
     const idx = a.index;
     const id = a.ids[idx];
     const question = byId(id);
-    const answeredCount = a.ids.filter(x => a.answers[x] !== undefined).length;
+    const isAnswered = v => Array.isArray(v) ? v.length > 0 : v !== undefined;
+    const answeredCount = a.ids.filter(x => isAnswered(a.answers[x])).length;
     const chosen = a.answers[id];
+    const multi = isMulti(question);
     const flagged = !!a.flags[id];
     const rem = examRemaining(a);
     const order = a.optOrder && a.optOrder[id] ? a.optOrder[id] : question.options.map((_, i) => i);
@@ -415,10 +477,10 @@
       </section>
       <section class="exam-main">
         <div class="exam-question panel">
-          <div class="question-meta"><span>Pregunta ${idx + 1} de ${a.ids.length} · Dominio ${question.domain}</span><button type="button" class="flag-btn ${flagged ? "on" : ""}" data-action="exam-flag">${flagged ? "🚩 Marcada" : "⚐ Marcar"}</button></div>
+          <div class="question-meta"><span>Pregunta ${idx + 1} de ${a.ids.length} · Dominio ${question.domain}${multi ? " · Elige " + question.correct.length : ""}</span><button type="button" class="flag-btn ${flagged ? "on" : ""}" data-action="exam-flag">${flagged ? "🚩 Marcada" : "⚐ Marcar"}</button></div>
           <h1>${escapeHtml(question.prompt)}</h1>
           <div class="answers" role="group" aria-label="Opciones">
-            ${order.map((origIdx, pos) => `<button type="button" class="answer ${chosen === origIdx ? "selected" : ""}" data-action="exam-answer" data-choice="${origIdx}"><b>${String.fromCharCode(65 + pos)}</b><span>${escapeHtml(question.options[origIdx])}</span></button>`).join("")}
+            ${order.map((origIdx, pos) => { const sel = multi ? (Array.isArray(chosen) && chosen.includes(origIdx)) : chosen === origIdx; return `<button type="button" class="answer${multi ? " multi" : ""} ${sel ? "selected" : ""}" data-action="exam-answer" data-choice="${origIdx}"><b>${String.fromCharCode(65 + pos)}</b><span>${escapeHtml(question.options[origIdx])}</span>${multi ? `<i class="chk">${sel ? "☑" : "☐"}</i>` : ""}</button>`; }).join("")}
           </div>
           <div class="exam-move">
             <button class="button secondary" type="button" data-action="exam-prev" ${idx === 0 ? "disabled" : ""}>← Anterior</button>
@@ -428,7 +490,7 @@
         <aside class="exam-palette">
           <p>Navegación</p>
           <div class="palette-grid">
-            ${a.ids.map((qid, i) => { let cls = "pal"; if (i === idx) cls += " current"; if (a.answers[qid] !== undefined) cls += " done"; if (a.flags[qid]) cls += " flag"; return `<button type="button" class="${cls}" data-action="exam-goto" data-idx="${i}">${i + 1}</button>`; }).join("")}
+            ${a.ids.map((qid, i) => { let cls = "pal"; if (i === idx) cls += " current"; if (isAnswered(a.answers[qid])) cls += " done"; if (a.flags[qid]) cls += " flag"; return `<button type="button" class="${cls}" data-action="exam-goto" data-idx="${i}">${i + 1}</button>`; }).join("")}
           </div>
           <div class="palette-legend"><span class="k done"></span>Respondida <span class="k flag"></span>Marcada <span class="k"></span>Sin responder</div>
         </aside>
@@ -459,7 +521,14 @@
       </section>
       <section class="review">
         <h2>Revisión de las ${a.ids.length} preguntas</h2>
-        ${a.ids.map((id, i) => { const qn = byId(id); const your = a.answers[id]; const ok = your === qn.correct; return `<article class="review-item ${ok ? "ok" : "bad"}"><div class="review-head"><span>#${i + 1} · Dominio ${qn.domain}</span><span class="review-flag">${ok ? "✓ Correcta" : (your === undefined ? "— Sin responder" : "✗ Incorrecta")}</span></div><p class="review-q">${escapeHtml(qn.prompt)}</p><ul class="review-opts">${qn.options.map((opt, oi) => { let c = ""; if (oi === qn.correct) c = "right"; else if (oi === your) c = "yours"; return `<li class="${c}"><b>${String.fromCharCode(65 + oi)}</b>${escapeHtml(opt)}${oi === qn.correct ? " ✓" : (oi === your ? " ← tu respuesta" : "")}</li>`; }).join("")}</ul><p class="review-exp">${escapeHtml(qn.explanation)}</p></article>`; }).join("")}
+        ${a.ids.map((id, i) => {
+          const qn = byId(id); const your = a.answers[id]; const multi = isMulti(qn);
+          const answeredQ = multi ? (Array.isArray(your) && your.length > 0) : (your !== undefined);
+          const ok = multi ? (Array.isArray(your) && setEqual(your, qn.correct)) : (your === qn.correct);
+          const isRight = oi => multi ? qn.correct.includes(oi) : oi === qn.correct;
+          const isYours = oi => multi ? (Array.isArray(your) && your.includes(oi)) : oi === your;
+          return `<article class="review-item ${ok ? "ok" : "bad"}"><div class="review-head"><span>#${i + 1} · Dominio ${qn.domain}${multi ? " · múltiple" : ""}</span><span class="review-flag">${ok ? "✓ Correcta" : (answeredQ ? "✗ Incorrecta" : "— Sin responder")}</span></div><p class="review-q">${escapeHtml(qn.prompt)}</p><ul class="review-opts">${qn.options.map((opt, oi) => { let c = ""; if (isRight(oi)) c = "right"; else if (isYours(oi)) c = "yours"; return `<li class="${c}"><b>${String.fromCharCode(65 + oi)}</b>${escapeHtml(opt)}${isRight(oi) ? " ✓" : (isYours(oi) ? " ← tu respuesta" : "")}</li>`; }).join("")}</ul><p class="review-exp">${escapeHtml(qn.explanation)}</p></article>`;
+        }).join("")}
       </section>`;
   }
 
@@ -558,12 +627,13 @@
       exam.history.forEach(h => { L.push("- " + new Date(h.date).toLocaleDateString("es") + ": " + h.correct + "/" + h.total + " (" + h.scaled + "/1000) — " + (h.passed ? "Aprobado" : "No aprobado")); });
       L.push("");
     }
+    const optLabel = (q, idx) => String.fromCharCode(65 + idx) + ") " + q.options[idx];
     const wrong = {};
     const latest = {};
     answers.forEach(a => { latest[a.id] = a; });
-    Object.keys(latest).forEach(id => { const a = latest[id]; if (!a.correct) wrong[id] = { choice: a.choice }; });
+    Object.keys(latest).forEach(id => { const rec = latest[id]; if (!rec.correct) { const q = byId(id); wrong[id] = { your: q && isMulti(q) ? rec.choices : rec.choice }; } });
     if (exam.active && exam.active.submittedAt) {
-      exam.active.ids.forEach(id => { const ch = exam.active.answers[id]; const q = byId(id); if (q && ch !== q.correct) wrong[id] = { choice: ch }; });
+      exam.active.ids.forEach(id => { const q = byId(id); if (!q) return; const v = exam.active.answers[id]; const ok = isMulti(q) ? (Array.isArray(v) && setEqual(v, q.correct)) : (v === q.correct); if (!ok) wrong[id] = { your: v }; });
     }
     const wrongIds = Object.keys(wrong);
     L.push("## Preguntas que fallé (" + wrongIds.length + ")");
@@ -571,10 +641,14 @@
     if (!wrongIds.length) L.push("_No hay preguntas falladas registradas. ¡Bien!_");
     wrongIds.forEach((id, i) => {
       const q = byId(id); if (!q) return;
-      const ch = wrong[id].choice;
+      const multi = isMulti(q);
+      const your = wrong[id].your;
       L.push((i + 1) + ". **[D" + q.domain + " · " + focusTitle(q.focus) + "]** " + q.prompt);
-      if (ch !== undefined && ch !== null) L.push("   - Tu respuesta: " + String.fromCharCode(65 + ch) + ") " + q.options[ch]);
-      L.push("   - Correcta: " + String.fromCharCode(65 + q.correct) + ") " + q.options[q.correct]);
+      let yourText = "";
+      if (multi) yourText = Array.isArray(your) && your.length ? your.map(c => optLabel(q, c)).join("; ") : "(sin responder)";
+      else if (your !== undefined && your !== null) yourText = optLabel(q, your);
+      if (yourText) L.push("   - Tu respuesta: " + yourText);
+      L.push("   - Correcta: " + (multi ? q.correct.map(c => optLabel(q, c)).join("; ") : optLabel(q, q.correct)));
       L.push("   - Por qué: " + q.explanation);
       L.push("");
     });
@@ -620,11 +694,13 @@
     const target = event.target.closest("[data-action]");
     if (!target) return;
     if (target.dataset.action === "answer") recordAnswer(Number(target.dataset.choice));
+    if (target.dataset.action === "toggle-multi") toggleMulti(Number(target.dataset.choice));
+    if (target.dataset.action === "check-multi") checkMulti();
     if (target.dataset.action === "next") { activeQuiz.index += 1; renderQuiz(); }
     if (target.dataset.action === "start-mixed") { startQuiz("mixed"); renderQuiz(); }
     if (target.dataset.action === "restart") { startQuiz(activeQuiz.focus); renderQuiz(); }
     if (target.dataset.action === "exam-start") startExam();
-    if (target.dataset.action === "exam-answer") { const s = loadExam(); const a = s.active; if (a && !a.submittedAt) { a.answers[a.ids[a.index]] = Number(target.dataset.choice); saveExam(s); renderExam(); } }
+    if (target.dataset.action === "exam-answer") { const s = loadExam(); const a = s.active; if (a && !a.submittedAt) { const id = a.ids[a.index]; const q = byId(id); const ch = Number(target.dataset.choice); if (isMulti(q)) { const arr = Array.isArray(a.answers[id]) ? a.answers[id].slice() : []; const at = arr.indexOf(ch); if (at >= 0) arr.splice(at, 1); else arr.push(ch); a.answers[id] = arr; } else { a.answers[id] = ch; } saveExam(s); renderExam(); } }
     if (target.dataset.action === "exam-flag") { const s = loadExam(); const a = s.active; if (a) { const id = a.ids[a.index]; if (a.flags[id]) delete a.flags[id]; else a.flags[id] = true; saveExam(s); renderExam(); } }
     if (target.dataset.action === "exam-prev") { const s = loadExam(); const a = s.active; if (a && a.index > 0) { a.index -= 1; saveExam(s); renderExam(); } }
     if (target.dataset.action === "exam-next") { const s = loadExam(); const a = s.active; if (a && a.index < a.ids.length - 1) { a.index += 1; saveExam(s); renderExam(); } }

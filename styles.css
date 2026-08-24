@@ -177,6 +177,11 @@ h2 { font-size: clamp(26px, 3vw, 38px); }
 .answer i { color: var(--green); font-size: 19px; margin-left: auto; font-style: normal; }
 .answer:disabled { cursor: default; }.answer.correct { border: 2px solid var(--good-border); background: var(--good-bg); }.answer.wrong { border: 2px solid var(--coral); background: var(--bad-bg); }.answer.wrong b { border-color: var(--coral); color: var(--bad-ink); }
 .answer-hint { margin: 23px 0 0; color: var(--muted); font-size: 13px; }
+.answer .chk { margin-left: auto; font-style: normal; color: var(--muted); font-size: 19px; }
+.answer.selected .chk, .answer.correct .chk { color: var(--green); }
+.answer.wrong .chk { color: var(--bad-ink); }
+.multi-actions { margin-top: 22px; }
+.multi-actions .answer-hint { margin: 0 0 12px; }
 .feedback { margin-top: 24px; padding: 23px; border-left: 4px solid; border-radius: 0 10px 10px 0; }
 .feedback.good { border-color: var(--good-border); background: var(--good-bg); }.feedback.needs-work { border-color: var(--coral); background: var(--bad-bg); }
 .feedback-label { margin-bottom: 3px; color: var(--green); font: 500 11px "DM Mono", monospace; letter-spacing: .06em; }.needs-work .feedback-label { color: var(--bad-ink); }

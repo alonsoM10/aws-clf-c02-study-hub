@@ -678,12 +678,57 @@
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
+  let ttsState = { id: null, paused: false };
+  function pickSpanishVoice() {
+    const voices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+    return voices.find(v => /^es(-|_)/i.test(v.lang)) || voices.find(v => /spanish|español/i.test(v.name)) || null;
+  }
+  function speakEpisode(ep) {
+    if (!("speechSynthesis" in window)) { alert("Tu navegador no soporta lectura por voz. Prueba en Chrome o Safari."); return; }
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(ep.script);
+    u.lang = "es-ES";
+    const v = pickSpanishVoice();
+    if (v) u.voice = v;
+    u.rate = 1; u.pitch = 1;
+    u.onend = () => { ttsState = { id: null, paused: false }; if (location.hash.startsWith("#/escuchar")) renderListen(); };
+    u.onerror = () => { ttsState = { id: null, paused: false }; if (location.hash.startsWith("#/escuchar")) renderListen(); };
+    ttsState = { id: ep.id, paused: false };
+    window.speechSynthesis.speak(u);
+    renderListen();
+  }
+  function togglePauseTTS() {
+    const s = window.speechSynthesis;
+    if (!s) return;
+    if (s.paused) { s.resume(); ttsState.paused = false; }
+    else if (s.speaking) { s.pause(); ttsState.paused = true; }
+    renderListen();
+  }
+  function stopTTS() {
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
+    ttsState = { id: null, paused: false };
+    renderListen();
+  }
+  function renderListen() {
+    const eps = data.podcast || [];
+    app.innerHTML = `
+      <section class="page-intro compact"><p class="kicker">ESCUCHAR</p><h1>Repasa sin mirar<br><em>la pantalla.</em></h1><p>Lecciones cortas que tu teléfono lee en voz alta. Perfecto para el metro: una vez cargada la app funciona sin internet. Toca Reproducir en cualquier lección.</p></section>
+      <section class="listen-grid">
+        ${eps.map((ep, i) => {
+          const active = ttsState.id === ep.id;
+          return `<article class="listen-card ${active ? "playing" : ""}"><div class="listen-top"><span class="listen-num">${i + 1}</span><span class="listen-mins">${escapeHtml(ep.mins || "")}</span></div><h2>${escapeHtml(ep.title)}</h2><div class="listen-actions">${active ? `<button class="button primary" type="button" data-action="tts-pause">${ttsState.paused ? "▶ Reanudar" : "⏸ Pausar"}</button><button class="button secondary" type="button" data-action="tts-stop">■ Detener</button>` : `<button class="button primary" type="button" data-action="tts-play" data-ep="${ep.id}">▶ Reproducir</button>`}</div></article>`;
+        }).join("")}
+      </section>
+      <p class="listen-note">🔊 Usa la voz del propio teléfono o navegador; sube el volumen para escucharla. Si no suena, prueba en Chrome o Safari y verifica que el dispositivo tenga una voz en español instalada.</p>`;
+  }
+
   function render() {
     const route = location.hash || "#/inicio";
     linkActive(route);
     stopExamTimer();
     if (route.startsWith("#/practicar")) renderPractice(route);
     else if (route.startsWith("#/tarjetas")) renderFlash(route);
+    else if (route.startsWith("#/escuchar")) renderListen();
     else if (route.startsWith("#/aprender/")) renderLearnDomain(Number(route.split("/")[2]));
     else if (route === "#/aprender") renderLearnHome();
     else if (route === "#/examen") renderExam();
@@ -716,6 +761,9 @@
     if (target.dataset.action === "flash-review") { if (activeDeck) { const card = activeDeck.cards[activeDeck.index]; const f = loadFlash(); delete f.known[card.front]; saveFlash(f); activeDeck.index = (activeDeck.index + 1) % activeDeck.cards.length; activeDeck.flipped = false; renderFlash(location.hash); } }
     if (target.dataset.action === "flash-reset") { const f = loadFlash(); f.known = {}; saveFlash(f); activeDeck = null; renderFlash(location.hash); }
     if (target.dataset.action === "export-report") downloadReport();
+    if (target.dataset.action === "tts-play") { const ep = (data.podcast || []).find(e => e.id === target.dataset.ep); if (ep) speakEpisode(ep); }
+    if (target.dataset.action === "tts-pause") togglePauseTTS();
+    if (target.dataset.action === "tts-stop") stopTTS();
   });
 
   const themeBtn = document.getElementById("themeToggle");
@@ -734,6 +782,7 @@
   });
 
   applyTheme(currentTheme());
+  if ("speechSynthesis" in window) { window.speechSynthesis.getVoices(); window.speechSynthesis.onvoiceschanged = function () { /* Voices ready. */ }; }
   window.addEventListener("hashchange", render);
   render();
 }());

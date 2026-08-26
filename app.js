@@ -527,7 +527,9 @@
           const ok = multi ? (Array.isArray(your) && setEqual(your, qn.correct)) : (your === qn.correct);
           const isRight = oi => multi ? qn.correct.includes(oi) : oi === qn.correct;
           const isYours = oi => multi ? (Array.isArray(your) && your.includes(oi)) : oi === your;
-          return `<article class="review-item ${ok ? "ok" : "bad"}"><div class="review-head"><span>#${i + 1} · Dominio ${qn.domain}${multi ? " · múltiple" : ""}</span><span class="review-flag">${ok ? "✓ Correcta" : (answeredQ ? "✗ Incorrecta" : "— Sin responder")}</span></div><p class="review-q">${escapeHtml(qn.prompt)}</p><ul class="review-opts">${qn.options.map((opt, oi) => { let c = ""; if (isRight(oi)) c = "right"; else if (isYours(oi)) c = "yours"; return `<li class="${c}"><b>${String.fromCharCode(65 + oi)}</b>${escapeHtml(opt)}${isRight(oi) ? " ✓" : (isYours(oi) ? " ← tu respuesta" : "")}</li>`; }).join("")}</ul><p class="review-exp">${escapeHtml(qn.explanation)}</p></article>`;
+          // Mostrar las opciones en el mismo orden barajado que se usó durante el examen, para que las letras coincidan.
+          const reviewOrder = (a.optOrder && a.optOrder[id]) || qn.options.map((_, oi) => oi);
+          return `<article class="review-item ${ok ? "ok" : "bad"}"><div class="review-head"><span>#${i + 1} · Dominio ${qn.domain}${multi ? " · múltiple" : ""}</span><span class="review-flag">${ok ? "✓ Correcta" : (answeredQ ? "✗ Incorrecta" : "— Sin responder")}</span></div><p class="review-q">${escapeHtml(qn.prompt)}</p><ul class="review-opts">${reviewOrder.map((oi, pos) => { let c = ""; if (isRight(oi)) c = "right"; else if (isYours(oi)) c = "yours"; return `<li class="${c}"><b>${String.fromCharCode(65 + pos)}</b>${escapeHtml(qn.options[oi])}${isRight(oi) ? " ✓" : (isYours(oi) ? " ← tu respuesta" : "")}</li>`; }).join("")}</ul><p class="review-exp">${escapeHtml(qn.explanation)}</p></article>`;
         }).join("")}
       </section>`;
   }

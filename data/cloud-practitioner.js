@@ -394,6 +394,16 @@
         ]
       }
     ],
+    examTraps: [
+      "Un backup NO es alta disponibilidad. El backup ayuda a la recuperación (DR); la alta disponibilidad se logra con varias zonas de disponibilidad (Multi-AZ).",
+      "Multi-AZ es disponibilidad; Multi-Región es para desastre regional, latencia global o soberanía de datos. No los mezcles.",
+      "La cuenta root casi no se usa: protégela con MFA y úsala solo para tareas que la exigen (cerrar la cuenta, cambiar el plan de soporte).",
+      "La responsabilidad compartida cambia según el servicio: en EC2 tú parchas el sistema operativo; en RDS o Lambda lo hace AWS.",
+      "Máximo descuento: Reserved de 3 años con pago total por adelantado. Spot es lo más barato, pero interrumpible.",
+      "Sin penalización por adivinar: responde TODAS las preguntas, aunque dudes.",
+      "El Free Tier cambió (jul 2025): ahora es Free Plan / Paid Plan con créditos de $100. El modelo de 12 meses aplica solo a cuentas antiguas.",
+      "Security Group = nivel instancia y con estado (solo permite). NACL = nivel subred y sin estado (permite y deniega)."
+    ],
     questions: [
       q("obs-01", "observability", 2, "Un auditor necesita saber qué identidad eliminó una regla de un security group, a qué hora y desde qué dirección IP. ¿Qué servicio debe revisar?", ["Amazon CloudWatch", "AWS CloudTrail", "AWS Config", "Amazon GuardDuty"], 1, "CloudTrail registra actividad de API y la identidad que realizó la acción; por eso sirve para auditoría e investigación.", ["CloudWatch monitorea métricas, logs y alarmas; no es el historial principal de llamadas API.", "Correcto: CloudTrail conserva el rastro de la actividad de la cuenta.", "Config muestra configuración e historial de recursos, pero la pregunta pide quién ejecutó la acción API.", "GuardDuty detecta actividad potencialmente maliciosa, no es el registro de auditoría principal."]),
       q("obs-02", "observability", 2, "Una aplicación debe enviar una alerta cuando el uso promedio de CPU de una instancia EC2 supere 80% durante cinco minutos. ¿Qué se usa?", ["Una alarma de Amazon CloudWatch", "Un trail de AWS CloudTrail", "AWS Artifact", "AWS IAM Access Analyzer"], 0, "CloudWatch recopila métricas como CPU y sus alarmas pueden notificar o activar acciones cuando se cumple un umbral.", ["Correcto: una alarma de CloudWatch evalúa una métrica contra un umbral.", "CloudTrail audita llamadas API, no evalúa métricas de CPU.", "Artifact entrega documentos de compliance.", "Access Analyzer ayuda a identificar acceso externo o políticas, no rendimiento."]),

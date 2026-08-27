@@ -269,6 +269,11 @@ button:focus-visible, a:focus-visible { outline: 3px solid var(--amber); outline
 .drill-table td b { color: var(--green-dark); }
 .drill-table tr:last-child td { border-bottom: 0; }
 
+.traps-list { display: grid; gap: 10px; margin-bottom: 8px; }
+.trap-row { display: grid; grid-template-columns: 26px 1fr; gap: 10px; align-items: start; padding: 13px 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); }
+.trap-row span { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--bad-bg); color: var(--bad-ink); font-weight: 700; font-size: 13px; }
+.trap-row p { margin: 0; font-size: 14px; line-height: 1.55; color: var(--ink-soft); }
+
 /* ---- Escuchar (audio) ---- */
 .listen-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 24px; }
 .listen-card { padding: 24px; border: 1px solid var(--line); border-radius: 16px; background: var(--panel); box-shadow: var(--shadow); display: flex; flex-direction: column; }

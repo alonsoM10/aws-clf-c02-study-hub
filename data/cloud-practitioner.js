@@ -61,6 +61,63 @@
       { title: "Planes de soporte de AWS", body: "Basic: incluido, solo foros y documentación. Developer: soporte por correo en horario laboral para pruebas/desarrollo. Business: soporte 24/7 por chat/teléfono/correo, pensado para cargas en producción. Enterprise: todo lo anterior más Technical Account Manager (TAM) y Concierge, para cargas de misión crítica.", tag: "Soporte" },
       { title: "Escalabilidad vertical vs horizontal", body: "Vertical: agrandar un mismo recurso (más CPU/RAM en una instancia); tiene un límite físico y suele requerir reinicio. Horizontal: agregar más instancias en paralelo, típico de Auto Scaling; es la forma nativa de escalar en la nube y no tiene un techo fijo.", tag: "Escalabilidad" }
     ],
+    confusionSets: [
+      {
+        title: "IaaS vs PaaS vs SaaS",
+        note: "Escalera: cuanto más subes, más gestiona AWS y menos tú. Si dice «solo subir código» → PaaS.",
+        headers: ["Modelo", "¿Quién gestiona el SO?", "Gatillo / ejemplo"],
+        rows: [
+          ["IaaS", "Tú (SO + app)", "«controlo el sistema operativo», máquina virtual → EC2"],
+          ["PaaS", "AWS (SO, runtime, escalado)", "«solo subo mi código», «que la plataforma administre el SO» → Elastic Beanstalk"],
+          ["SaaS", "AWS (todo)", "«aplicación lista para usar», usuario final → WorkMail, Chime"]
+        ]
+      },
+      {
+        title: "Seguridad D2: ¿detecta o protege?",
+        note: "WAF y Shield PROTEGEN/filtran el tráfico. GuardDuty, Macie e Inspector DETECTAN (te avisan, no bloquean).",
+        headers: ["Servicio", "¿Qué hace?", "Si el enunciado dice…"],
+        rows: [
+          ["WAF", "Filtra tráfico web (capa 7)", "«SQL injection», «XSS», peticiones HTTP maliciosas, bloquear IPs"],
+          ["Shield", "Protege de DDoS", "«ataque DDoS», «volumétrico»"],
+          ["GuardDuty", "Detecta amenazas en logs", "«comportamiento anómalo», «actividad maliciosa»"],
+          ["Macie", "Descubre datos sensibles", "«PII», «datos sensibles» en S3"],
+          ["Inspector", "Escanea vulnerabilidades", "«CVE», «vulnerabilidades», «parches faltantes» en EC2"],
+          ["Security Hub", "Junta hallazgos", "«un solo panel», «centralizar hallazgos»"]
+        ]
+      },
+      {
+        title: "Mover datos: DataSync vs Snowball vs Storage Gateway",
+        note: "Pregúntate: ¿hay red o no? ¿una vez o permanente? «Por la red» = DataSync. «Sin conexión / físico» = Snowball.",
+        headers: ["Servicio", "¿Cuándo?", "Si el enunciado dice…"],
+        rows: [
+          ["DataSync", "Por red, hay conexión, recurrente", "«por la red», «cada noche», «programada», «acelerada»"],
+          ["Snowball Edge", "Dispositivo físico, sin/poca conexión", "«sin conexión», «lugar remoto», «petabytes», «procesar en el borde», barco/mina"],
+          ["Storage Gateway", "Puente híbrido permanente", "«seguir usando archivos/iSCSI/cinta locales», «respaldo transparente»"],
+          ["DMS", "Migrar bases de datos", "«base de datos», «replicación durante la migración»"]
+        ]
+      },
+      {
+        title: "Analítica: Athena vs Glue vs EMR vs Redshift",
+        note: "SQL sobre S3 sin servidores = Athena. Transformar/catalogar = Glue. Spark/Hadoop = EMR.",
+        headers: ["Servicio", "¿Qué hace?", "Si el enunciado dice…"],
+        rows: [
+          ["Athena", "SQL sobre S3, serverless", "«consultar S3 con SQL», «por consulta», «sin servidores»"],
+          ["Glue", "ETL: catalogar y transformar", "«ETL», «catalogar», «transformar sin administrar servidores»"],
+          ["EMR", "Clúster Spark/Hadoop", "«Spark», «Hadoop», «clúster de big data»"],
+          ["Redshift", "Data warehouse para BI", "«data warehouse», «analítica a escala de petabytes»"]
+        ]
+      },
+      {
+        title: "Las 3 C: CloudTrail vs CloudWatch vs Config",
+        note: "¿Quién? → CloudTrail. ¿Cómo va (CPU/latencia)? → CloudWatch. ¿Cumple una regla? → Config.",
+        headers: ["Servicio", "Responde a…", "Si el enunciado dice…"],
+        rows: [
+          ["CloudTrail", "¿Quién hizo qué?", "«quién», «desde qué IP», auditoría de acciones/API"],
+          ["CloudWatch", "¿Cómo se comporta?", "«CPU», «latencia», «alarma», métricas de rendimiento"],
+          ["Config", "¿Cumple la regla?", "«cambió la configuración», «evalúa contra una regla», historial de config"]
+        ]
+      }
+    ],
     studyGuide: [
       {
         id: 1, weight: 24, color: "amber",
@@ -339,6 +396,9 @@
           ["Patrón de acceso desconocido (optimizar solo)", "S3 Intelligent-Tiering"],
           ["Lo más barato, horas para recuperar", "S3 Glacier Deep Archive"],
           ["Apps on-premises con almacenamiento en caché en la nube", "AWS Storage Gateway"],
+          ["Copiar archivos por la red cada noche, hay conexión", "AWS DataSync"],
+          ["Capturar y procesar datos sin conexión, luego enviarlos", "AWS Snowball Edge"],
+          ["Migrar una base de datos manteniendo la replicación", "AWS Database Migration Service (DMS)"],
           ["Sentimiento de reseñas escritas", "Amazon Comprehend"],
           ["Extraer campos de facturas escaneadas", "Amazon Textract"],
           ["Detectar objetos en fotografías", "Amazon Rekognition"],

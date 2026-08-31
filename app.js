@@ -304,6 +304,16 @@
     app.innerHTML = `<section class="results panel"><p class="kicker">SESIÓN COMPLETADA</p><div class="score-ring"><strong>${correct}<small>/${total}</small></strong><span>${percent}%</span></div><h1>${percent >= 80 ? "Este bloque está sólido." : "Ya sabes exactamente dónde insistir."}</h1><p>${percent >= 80 ? "Cumpliste la meta de 8/10. Mantén una sesión mixta más adelante para comprobar que la diferencia sigue automática." : "No memorices solo la respuesta: vuelve a mirar el descarte, luego repite este frente hasta obtener 8/10."}</p>${wrongAreas.length ? `<div class="reinforce"><h2>Reforzar ahora</h2>${wrongAreas.map(area => `<a href="#/practicar/${area.id}">${escapeHtml(area.title)} <span>→</span></a>`).join("")}</div>` : ""}<div class="result-actions"><button type="button" class="button primary" data-action="restart">Repetir bloque</button><a class="button secondary" href="#/practicar">Elegir otro frente</a></div></section>`;
   }
 
+  function renderPolish() {
+    const items = data.polish || [];
+    app.innerHTML = `
+      <section class="page-intro compact"><p class="kicker">PARA PULIR</p><h1>Los detalles que<br><em>se te escapan.</em></h1><p>Ejemplos cortos de lo que más confundes. Léelos, di la respuesta en tu cabeza y toca para comprobar. Perfecto para el metro.</p></section>
+      <section class="polish-grid">
+        ${items.map(it => `<details class="polish-card"><summary><span class="polish-cat">${escapeHtml(it.cat)}</span><span class="polish-q">${escapeHtml(it.q)}</span></summary><p class="polish-a">${escapeHtml(it.a)}</p></details>`).join("")}
+      </section>
+      <p class="listen-note">💡 Antes de abrir cada tarjeta, di la respuesta en voz baja. Ese esfuerzo de recordar es lo que hace que se te quede.</p>`;
+  }
+
   function renderCheatSheet() {
     app.innerHTML = `<section class="page-intro compact"><p class="kicker">REPASO RÁPIDO</p><h1>Lo que no quieres<br><em>confundir en el examen.</em></h1><p>Lee estas comparaciones antes de practicar o el día previo. Para consolidarlas, vuelve a los escenarios.</p></section><section class="section-heading drill-heading no-top"><div><p class="kicker">NO CONFUNDIR</p><h2>Las que más fallas, lado a lado</h2><p>Reconoce la palabra gatillo y salta al servicio correcto. Estas son tus confusiones frecuentes.</p></div></section>${(data.confusionSets || []).map(set => `<section class="drill panel"><h3>${escapeHtml(set.title)}</h3>${set.note ? `<p class="vs-note">${escapeHtml(set.note)}</p>` : ""}<div class="drill-scroll"><table class="drill-table vs-table"><thead><tr>${set.headers.map(h => `<th>${escapeHtml(h)}</th>`).join("")}</tr></thead><tbody>${set.rows.map(r => `<tr><td class="vs-key"><b>${escapeHtml(r[0])}</b></td><td>${escapeHtml(r[1])}</td><td>${escapeHtml(r[2])}</td></tr>`).join("")}</tbody></table></div></section>`).join("")}<section class="section-heading drill-heading"><div><p class="kicker">COMPARACIONES CLAVE</p><h2>Otras que suelen caer</h2></div></section><section class="cheat-grid">${data.cheatSheets.map(card => `<article><span>${escapeHtml(card.tag)}</span><h2>${escapeHtml(card.title)}</h2><p>${escapeHtml(card.body)}</p></article>`).join("")}</section><section class="section-heading drill-heading"><div><p class="kicker">PALABRAS GATILLO</p><h2>Si el enunciado dice… piensa en…</h2><p>La técnica que más puntos da: reconoce la pista y salta al servicio. Tablas de la guía maestra de Camila, adaptadas al español.</p></div></section>${data.triggerDrills.map(d => `<section class="drill panel"><h3>${escapeHtml(d.title)}</h3><div class="drill-scroll"><table class="drill-table"><thead><tr><th>Si el enunciado dice…</th><th>Piensa en…</th></tr></thead><tbody>${d.pairs.map(p => `<tr><td>${escapeHtml(p[0])}</td><td><b>${escapeHtml(p[1])}</b></td></tr>`).join("")}</tbody></table></div></section>`).join("")}<section class="section-heading drill-heading"><div><p class="kicker">OJO CON ESTO</p><h2>Trampas típicas del examen</h2></div></section><section class="traps-list">${(data.examTraps || []).map(t => `<div class="trap-row"><span>!</span><p>${escapeHtml(t)}</p></div>`).join("")}</section><section class="exam-facts panel"><div><p class="kicker">FORMATO REAL</p><h2>Qué esperar en CLF-C02</h2></div><ul><li><b>65</b> preguntas totales; 50 puntuadas y 15 no puntuadas.</li><li><b>700/1000</b> es el puntaje mínimo de aprobación.</li><li><b>Sin penalización</b> por adivinar: responde todas.</li></ul><a class="button primary" href="#/practicar/mixed">Hacer diagnóstico →</a></section>`;
   }
@@ -732,6 +742,7 @@
     else if (route.startsWith("#/aprender/")) renderLearnDomain(Number(route.split("/")[2]));
     else if (route === "#/aprender") renderLearnHome();
     else if (route === "#/examen") renderExam();
+    else if (route === "#/pulir") renderPolish();
     else if (route === "#/chuleta") renderCheatSheet();
     else renderHome();
     app.focus({ preventScroll: true });

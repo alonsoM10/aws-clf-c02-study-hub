@@ -491,7 +491,13 @@
       { cat: "CAF", q: "El marco de AWS para PLANIFICAR cómo una empresa adopta la nube, con 6 perspectivas.", a: "AWS CAF (Cloud Adoption Framework). Las 6: Business, People, Governance, Platform, Security, Operations." },
       { cat: "CAF", q: "En CAF, la perspectiva que se ocupa de la CAPACITACIÓN, cultura y gestión del cambio del equipo.", a: "Perspectiva People (Personas). (Governance = riesgo/control; Business = ROI.)" },
       { cat: "CAF", q: "En CAF, la perspectiva de gestionar RIESGOS, medir y controlar el gasto del portafolio.", a: "Perspectiva Governance (Gobernanza)." },
-      { cat: "Migración", q: "Estrategia de migración que mueve la app TAL CUAL, sin cambios ('lift and shift').", a: "Rehost. (Refactor = rediseñar; Replatform = pequeños ajustes; Repurchase = cambiar a SaaS.)" }
+      { cat: "Migración", q: "Estrategia de migración que mueve la app TAL CUAL, sin cambios ('lift and shift').", a: "Rehost. (Refactor = rediseñar; Replatform = pequeños ajustes; Repurchase = cambiar a SaaS.)" },
+      { cat: "Identidad", q: "¿Qué servicio de AWS es completamente GRATIS de usar?", a: "AWS IAM (usuarios, grupos, roles y políticas). Gestionar identidades no cuesta; solo pagas los recursos que usen." },
+      { cat: "Almacenamiento", q: "¿Cuál es el límite de almacenamiento TOTAL de un bucket de S3?", a: "Ilimitado (no hay tope total). Lo único con límite es cada OBJETO: máximo 5 TB." },
+      { cat: "Precios", q: "Una Reserved Instance que necesitas poder CAMBIAR por otro tipo de instancia más adelante.", a: "Convertible Reserved Instance. (La Standard da más descuento pero NO se puede cambiar de familia.)" },
+      { cat: "Gestión", q: "AWS Config vs Secrets Manager vs Systems Manager: ¿cuál para VIGILAR la configuración de los recursos?", a: "AWS Config (historial y cumplimiento de config). Secrets Manager = guardar/rotar secretos. Systems Manager = operar/parchar instancias." },
+      { cat: "Cómputo", q: "En AWS, ¿qué es 'un servidor'?", a: "Un computador en la nube = una instancia EC2. Tú eliges CPU/RAM y manejas su sistema operativo (IaaS)." },
+      { cat: "Precios", q: "App que NO se puede caer y con el mayor ahorro posible. ¿Qué instancia?", a: "Reserved (3 años). ¡NO Spot! Spot es el más barato pero AWS lo interrumpe cuando quiere → no sirve si no se puede caer." }
     ],
     examNotes: [
       {
@@ -588,6 +594,7 @@
         rows: [
           ["On-Demand", "Pagas por hora/segundo sin compromiso. Flexible pero lo más caro. Para pruebas o cargas impredecibles."],
           ["Reserved Instances", "Te comprometes 1 o 3 años y ahorras hasta ~72%. Para cargas fijas y constantes."],
+          ["Standard vs Convertible RI", "Standard = más descuento, pero NO cambias el tipo de instancia. Convertible = menos descuento, pero SÍ puedes cambiarla a otra familia/tamaño."],
           ["Savings Plans", "Te comprometes a un gasto por hora (1-3 años) y ahorras parecido a Reserved, pero más flexible."],
           ["Spot", "Lo MÁS barato (hasta ~90%), pero AWS te lo puede quitar cuando lo necesite. Solo para cargas que aguantan cortes."],
           ["Dedicated Host", "Un servidor físico entero solo para ti. Para licencias especiales o requisitos de cumplimiento."],
@@ -597,7 +604,8 @@
       {
         title: "💾 Almacenamiento (D3)",
         rows: [
-          ["S3", "Guarda ARCHIVOS (objetos) sueltos: fotos, backups, videos. Casi infinito y se accede por internet. Se guarda en 'buckets'."],
+          ["S3", "Guarda ARCHIVOS (objetos) sueltos: fotos, backups, videos. Se accede por internet. Se guarda en 'buckets'."],
+          ["Límites de S3", "Almacenamiento TOTAL: ilimitado (sin tope). Cada OBJETO: máximo 5 TB. (Dato que cae en el examen.)"],
           ["EBS", "Un DISCO duro para pegarle a UNA instancia EC2. PERSISTE (los datos siguen) aunque apagues la instancia. Vive en una sola AZ."],
           ["Instance Store", "Disco pegado a EC2 pero EFÍMERO: se BORRA todo al apagar/detener la instancia. Solo para datos temporales."],
           ["EFS", "Un disco de archivos COMPARTIDO que varias EC2 (Linux) usan a la vez. Crece y se achica solo."],
@@ -645,7 +653,7 @@
       {
         title: "🔐 Seguridad e identidad (D2)",
         rows: [
-          ["IAM", "Usuarios, grupos, roles y políticas. Gratis. Principio de mínimo privilegio."],
+          ["IAM", "Usuarios, grupos, roles y políticas. GRATIS de usar (dato de examen). Principio de mínimo privilegio."],
           ["Cuenta root", "No usar a diario. Activar MFA. Solo tareas que la exigen."],
           ["Roles IAM", "Permisos temporales para servicios (ej. EC2 accede a S3). Nunca claves fijas."],
           ["MFA", "Segundo factor. Actívalo, sobre todo en root."],
@@ -669,6 +677,15 @@
           ["CloudWatch", "Métricas, logs y alarmas (rendimiento/operación)."],
           ["Trusted Advisor", "Recomienda en 5 áreas: costo, rendimiento, seguridad, tolerancia a fallos, límites."],
           ["Recuerda", "CloudTrail = API/quién · CloudWatch = métricas · Config = configuración."]
+        ]
+      },
+      {
+        title: "🤔 No confundir: Config · Secrets Manager · Systems Manager",
+        rows: [
+          ["AWS Config", "VIGILA la CONFIGURACIÓN de tus recursos: guarda el historial y avisa si algo deja de cumplir las reglas. Pista: 'configuración / cumplimiento'."],
+          ["Secrets Manager", "GUARDA y ROTA secretos: contraseñas, claves de API, credenciales de bases de datos. Pista: 'contraseña / rotar / secreto'."],
+          ["Systems Manager (SSM)", "OPERA tus servidores: parchar, ejecutar comandos, guardar parámetros (Parameter Store). Pista: 'operar / administrar la flota / parchar'."],
+          ["Parameter Store vs Secrets Manager", "Ambos guardan valores. Secrets Manager ROTA solo (para secretos). Parameter Store estándar es gratis pero NO rota."]
         ]
       },
       {
@@ -970,7 +987,13 @@
       q("caf-03", "cloud-adoption", 1, "En el AWS CAF, la gestión de riesgos, el control del gasto y la medición del portafolio de proyectos corresponden a la perspectiva…", ["Platform", "Security", "Governance", "People"], 2, "La perspectiva Governance (Gobernanza) del CAF se encarga de gestionar y medir la iniciativa de nube: riesgos, cumplimiento, portafolio y control financiero.", ["Platform trata de construir y modernizar la infraestructura y las aplicaciones.", "Security trata de proteger la confidencialidad, integridad y disponibilidad.", "Correcto: Governance gestiona riesgo, control y medición del portafolio.", "People trata sobre cultura, roles y capacitación del personal."]),
       q("caf-04", "cloud-adoption", 1, "Una empresa decide mover una aplicación a AWS tal cual, sin cambiar su código ('lift and shift'), para migrar rápido. ¿Qué estrategia de migración es?", ["Rehost", "Refactor", "Repurchase", "Retire"], 0, "Rehost ('lift and shift') mueve la aplicación sin modificaciones; es la estrategia más rápida para migrar cargas a la nube.", ["Correcto: Rehost mueve la aplicación tal cual, sin cambios.", "Refactor implica rediseñar la aplicación para aprovechar servicios de nube; es lo más costoso.", "Repurchase es cambiar a un producto distinto, típicamente una solución SaaS.", "Retire es dar de baja lo que ya no se usa, no migrarlo."]),
       q("caf-05", "cloud-adoption", 1, "Durante la planificación de migración, un equipo decide reemplazar su sistema de correo propio por una solución SaaS de terceros. ¿Qué estrategia de las 7 R representa?", ["Replatform", "Repurchase", "Relocate", "Retain"], 1, "Repurchase significa dejar de mantener la solución actual y cambiar a un producto diferente, habitualmente un servicio SaaS.", ["Replatform mueve con pequeños ajustes, pero conserva la misma aplicación base.", "Correcto: Repurchase es cambiar a otro producto, como pasar a un SaaS.", "Relocate traslada la infraestructura sin cambios (por ejemplo, VMware) a la nube.", "Retain es mantener la carga on-premise por ahora, sin migrarla."]),
-      q("caf-06", "cloud-adoption", 1, "En el AWS CAF, construir y modernizar la infraestructura y las aplicaciones para que funcionen en la nube corresponde a la perspectiva…", ["Platform", "Business", "People", "Governance"], 0, "La perspectiva Platform (Plataforma) del CAF se ocupa de diseñar, construir y modernizar la infraestructura y las cargas de trabajo en la nube.", ["Correcto: Platform trata de construir y modernizar infraestructura y aplicaciones.", "Business alinea la inversión en nube con los objetivos del negocio.", "People trata de cultura, roles y capacitación de las personas.", "Governance gestiona riesgo, control y medición del portafolio."])
+      q("caf-06", "cloud-adoption", 1, "En el AWS CAF, construir y modernizar la infraestructura y las aplicaciones para que funcionen en la nube corresponde a la perspectiva…", ["Platform", "Business", "People", "Governance"], 0, "La perspectiva Platform (Plataforma) del CAF se ocupa de diseñar, construir y modernizar la infraestructura y las cargas de trabajo en la nube.", ["Correcto: Platform trata de construir y modernizar infraestructura y aplicaciones.", "Business alinea la inversión en nube con los objetivos del negocio.", "People trata de cultura, roles y capacitación de las personas.", "Governance gestiona riesgo, control y medición del portafolio."]),
+
+      q("iam-free-01", "iam", 2, "Una empresa quiere saber qué servicio de administración de identidades y accesos puede usar SIN costo adicional para crear usuarios, grupos y roles. ¿Cuál es?", ["AWS IAM", "AWS IAM Identity Center", "Amazon Cognito", "AWS Directory Service"], 0, "AWS IAM no tiene costo: crear y administrar usuarios, grupos, roles y políticas es gratis; solo pagas por los recursos de AWS que esas identidades utilicen.", ["Correcto: usar IAM es gratuito.", "IAM Identity Center también gestiona acceso, pero la pregunta apunta al servicio base de identidades sin costo, que es IAM.", "Cognito gestiona identidades de usuarios finales de aplicaciones y tiene costos según uso.", "Directory Service (Microsoft AD gestionado) tiene costo por hora."]),
+      q("s3-limit-01", "migration", 3, "Un cliente pregunta cuánta capacidad TOTAL puede almacenar en Amazon S3 y cuál es el tamaño máximo de un solo objeto. ¿Cuál es la respuesta correcta?", ["Almacenamiento total ilimitado; objeto máximo de 5 TB", "Máximo 100 TB en total; objeto máximo de 5 GB", "Almacenamiento total ilimitado; objeto máximo de 5 GB", "Máximo 5 TB en total; sin límite por objeto"], 0, "Amazon S3 ofrece capacidad total ilimitada; el único límite es el tamaño de cada objeto individual, que puede llegar hasta 5 TB.", ["Correcto: total ilimitado y hasta 5 TB por objeto.", "S3 no tiene un tope total de 100 TB, y el objeto puede ser mucho mayor a 5 GB.", "El total es ilimitado, pero el objeto llega a 5 TB, no 5 GB.", "No existe un tope total de 5 TB; el límite de 5 TB es por objeto."]),
+      q("ri-convert-01", "core-tech", 3, "Una empresa quiere el descuento de las Reserved Instances, pero necesita poder CAMBIAR el tipo de instancia (por ejemplo, de una familia a otra) durante el compromiso. ¿Qué opción elige?", ["Convertible Reserved Instance", "Standard Reserved Instance", "Spot Instance", "On-Demand Instance"], 0, "Las Convertible Reserved Instances permiten cambiar atributos como la familia o el tamaño de instancia durante el plazo, a cambio de un descuento algo menor que las Standard.", ["Correcto: la Convertible RI permite cambiar el tipo de instancia.", "La Standard RI ofrece mayor descuento pero NO permite cambiar la familia de instancia.", "Spot no da un compromiso con descuento reservado y puede interrumpirse.", "On-Demand no ofrece el descuento de una instancia reservada."]),
+      q("mgmt-trio-01", "sec-gov", 2, "Un equipo necesita registrar el historial de configuración de sus recursos y recibir alertas cuando alguno deje de cumplir las reglas definidas. ¿Qué servicio usa?", ["AWS Config", "AWS Secrets Manager", "AWS Systems Manager", "AWS CloudTrail"], 0, "AWS Config registra el historial de configuración de los recursos y evalúa su cumplimiento frente a reglas, alertando cuando algo se desvía.", ["Correcto: Config vigila la configuración y el cumplimiento de los recursos.", "Secrets Manager guarda y rota secretos como contraseñas, no evalúa configuración.", "Systems Manager opera y parcha instancias, no es el registro de cumplimiento de configuración.", "CloudTrail registra llamadas a API (quién hizo qué), no el estado de configuración de cada recurso."]),
+      q("mgmt-trio-02", "sec-gov", 2, "Una aplicación necesita almacenar de forma segura la contraseña de una base de datos y que se ROTE automáticamente cada cierto tiempo. ¿Qué servicio corresponde?", ["AWS Secrets Manager", "AWS Config", "AWS Systems Manager Parameter Store (estándar)", "AWS KMS"], 0, "AWS Secrets Manager almacena secretos de forma segura y puede rotarlos automáticamente, ideal para credenciales de bases de datos.", ["Correcto: Secrets Manager guarda y rota secretos de forma automática.", "Config vigila la configuración de recursos, no almacena secretos.", "Parameter Store estándar guarda valores, pero no rota los secretos por sí solo.", "KMS administra claves de cifrado, no almacena ni rota contraseñas."])
     ]
   };
 }());

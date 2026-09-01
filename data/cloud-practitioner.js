@@ -495,6 +495,7 @@
       { cat: "Identidad", q: "¿Qué servicio de AWS es completamente GRATIS de usar?", a: "AWS IAM (usuarios, grupos, roles y políticas). Gestionar identidades no cuesta; solo pagas los recursos que usen." },
       { cat: "Almacenamiento", q: "¿Cuál es el límite de almacenamiento TOTAL de un bucket de S3?", a: "Ilimitado (no hay tope total). Lo único con límite es cada OBJETO: máximo 5 TB." },
       { cat: "Precios", q: "Una Reserved Instance que necesitas poder CAMBIAR por otro tipo de instancia más adelante.", a: "Convertible Reserved Instance. (La Standard da más descuento pero NO se puede cambiar de familia.)" },
+      { cat: "Precios", q: "Reserved Instances: ¿cuál se VENDE en el Marketplace y cuál se CAMBIA por otro tipo?", a: "Vender en Marketplace → Standard RI. Cambiar por otro tipo → Convertible RI. (No se mezclan: Standard vende, Convertible cambia.)" },
       { cat: "Gestión", q: "AWS Config vs Secrets Manager vs Systems Manager: ¿cuál para VIGILAR la configuración de los recursos?", a: "AWS Config (historial y cumplimiento de config). Secrets Manager = guardar/rotar secretos. Systems Manager = operar/parchar instancias." },
       { cat: "Cómputo", q: "En AWS, ¿qué es 'un servidor'?", a: "Un computador en la nube = una instancia EC2. Tú eliges CPU/RAM y manejas su sistema operativo (IaaS)." },
       { cat: "Precios", q: "App que NO se puede caer y con el mayor ahorro posible. ¿Qué instancia?", a: "Reserved (3 años). ¡NO Spot! Spot es el más barato pero AWS lo interrumpe cuando quiere → no sirve si no se puede caer." }
@@ -594,7 +595,7 @@
         rows: [
           ["On-Demand", "Pagas por hora/segundo sin compromiso. Flexible pero lo más caro. Para pruebas o cargas impredecibles."],
           ["Reserved Instances", "Te comprometes 1 o 3 años y ahorras hasta ~72%. Para cargas fijas y constantes."],
-          ["Standard vs Convertible RI", "Standard = más descuento, pero NO cambias el tipo de instancia. Convertible = menos descuento, pero SÍ puedes cambiarla a otra familia/tamaño."],
+          ["Standard vs Convertible RI", "Standard = más descuento; se puede VENDER en el Marketplace pero NO cambiar de tipo. Convertible = menos descuento; se puede CAMBIAR por otro tipo pero NO vender. (Vender→Standard, Cambiar→Convertible.)"],
           ["Savings Plans", "Te comprometes a un gasto por hora (1-3 años) y ahorras parecido a Reserved, pero más flexible."],
           ["Spot", "Lo MÁS barato (hasta ~90%), pero AWS te lo puede quitar cuando lo necesite. Solo para cargas que aguantan cortes."],
           ["Dedicated Host", "Un servidor físico entero solo para ti. Para licencias especiales o requisitos de cumplimiento."],

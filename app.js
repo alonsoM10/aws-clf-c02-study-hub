@@ -61,12 +61,6 @@
     return { progress, answers, correct, percent };
   }
 
-  function daysToExam() {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const exam = new Date(data.exam.date + "T00:00:00");
-    return Math.max(0, Math.ceil((exam - today) / 86400000));
-  }
 
   function shuffle(items) {
     return items.map(value => ({ value, key: Math.random() })).sort((a, b) => a.key - b.key).map(item => item.value);
@@ -91,8 +85,7 @@
 
   function renderHome() {
     const { answers, correct, percent } = progressSummary();
-    const days = daysToExam();
-    const next = data.schedule[Math.min(data.schedule.length - 1, Math.max(0, 16 - days))];
+    const next = data.schedule[0];
     app.innerHTML = `
       <section class="hero panel">
         <div class="hero-copy">
@@ -105,9 +98,9 @@
           </div>
         </div>
         <div class="exam-card">
-          <p>Tu examen</p>
-          <strong>01<br><span>SEP</span></strong>
-          <div class="exam-detail"><b>${days}</b> días restantes</div>
+          <p>Tu reintento</p>
+          <strong>TÚ<br><span>DECIDES</span></strong>
+          <div class="exam-detail">Agenda al sacar <b>800+</b> dos veces</div>
           <div class="exam-detail"><b>65</b> preguntas totales</div>
           <div class="exam-detail"><b>700</b> puntaje mínimo</div>
         </div>
@@ -134,7 +127,7 @@
       </section>
 
       <section class="section-heading">
-        <div><p class="kicker">HOY</p><h2>${escapeHtml(next[1])}</h2><p>${escapeHtml(next[2])}</p></div>
+        <div><p class="kicker">EMPIEZA POR AQUÍ</p><h2>${escapeHtml(next[1])}</h2><p>${escapeHtml(next[2])}</p></div>
         <a href="#/practicar" class="inline-link">Ver todas las prácticas →</a>
       </section>
       <section class="focus-grid">
@@ -150,9 +143,9 @@
       </section>
 
       <section class="plan panel">
-        <div class="plan-heading"><p class="kicker">RUTA HASTA EL EXAMEN</p><h2>16 días, sin intentar abarcar todo a la vez.</h2></div>
+        <div class="plan-heading"><p class="kicker">PLAN DE REINTENTO · 3 SEMANAS</p><h2>Cierra tus huecos, consolida y da simulacros. Sin apuros.</h2></div>
         <ol class="schedule">
-          ${data.schedule.map((day, index) => `<li class="${index === Math.max(0, 16 - days) ? "today" : ""}"><span>${escapeHtml(day[0])}</span><strong>${escapeHtml(day[1])}</strong><small>${escapeHtml(day[2])}</small></li>`).join("")}
+          ${data.schedule.map((day, index) => `<li class="${index === 0 ? "today" : ""}"><span>${escapeHtml(day[0])}</span><strong>${escapeHtml(day[1])}</strong><small>${escapeHtml(day[2])}</small></li>`).join("")}
         </ol>
       </section>`;
   }
@@ -624,7 +617,7 @@
     const L = [];
     L.push("# Reporte de estudio · AWS CLF-C02");
     L.push("");
-    L.push("Generado: " + new Date().toLocaleString("es") + "  ·  Examen objetivo: 1 de septiembre de 2026 (" + daysToExam() + " días restantes)");
+    L.push("Generado: " + new Date().toLocaleString("es") + "  ·  Preparando el reintento de CLF-C02");
     L.push("");
     const total = answers.length;
     const correct = answers.filter(a => a.correct).length;

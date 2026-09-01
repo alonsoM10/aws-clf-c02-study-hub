@@ -28,7 +28,8 @@
       { id: "dev-tools", title: "Desarrollo e integración", status: "Importante", description: "CodePipeline y familia Code*, API Gateway, Step Functions, X-Ray y Lightsail.", goal: "10 preguntas de escenario" },
       { id: "sec-gov", title: "Gobierno y seguridad avanzada", status: "Importante", description: "Security Hub, Detective, Control Tower, Service Catalog, ACM e Identity Center.", goal: "8 preguntas de escenario" },
       { id: "hybrid-edge", title: "Híbrido y borde", status: "Importante", description: "Outposts, Local Zones, Wavelength, Snowball Edge y Greengrass.", goal: "6 preguntas de escenario" },
-      { id: "databases", title: "Bases de datos especializadas", status: "Importante", description: "DocumentDB, Neptune, Timestream, Keyspaces, MemoryDB y cuándo usar cada una.", goal: "6 preguntas de escenario" }
+      { id: "databases", title: "Bases de datos especializadas", status: "Importante", description: "DocumentDB, Neptune, Timestream, Keyspaces, MemoryDB y cuándo usar cada una.", goal: "6 preguntas de escenario" },
+      { id: "cloud-adoption", title: "AWS CAF y migración", status: "Crítico", description: "Las 6 perspectivas del Cloud Adoption Framework y las estrategias de migración (7 R).", goal: "8 preguntas de escenario" }
     ],
     schedule: [
       ["16 ago", "CloudTrail vs CloudWatch", "10 preguntas de escenario + descarte"],
@@ -486,7 +487,11 @@
       { cat: "Integración", q: "Ejecutar una Lambda cada vez que una EC2 cambia de estado, sin sondear.", a: "Amazon EventBridge (enruta eventos → acción)." },
       { cat: "Monitoreo", q: "Registrar cada lectura de objetos en S3 (cada GetObject), no solo crear/borrar el bucket.", a: "Eventos de DATOS de CloudTrail. (Los de administración = crear/borrar recursos.)" },
       { cat: "Conceptos", q: "No tener que predecir la capacidad con años; crecer y reducir según la demanda en minutos.", a: "Agilidad y elasticidad. (Economía de escala = precio más bajo por volumen.)" },
-      { cat: "Conceptos", q: "Solo usar una app lista en el navegador, sin instalar ni administrar nada.", a: "SaaS. (PaaS = subir tu código. IaaS = tú controlas el SO.)" }
+      { cat: "Conceptos", q: "Solo usar una app lista en el navegador, sin instalar ni administrar nada.", a: "SaaS. (PaaS = subir tu código. IaaS = tú controlas el SO.)" },
+      { cat: "CAF", q: "El marco de AWS para PLANIFICAR cómo una empresa adopta la nube, con 6 perspectivas.", a: "AWS CAF (Cloud Adoption Framework). Las 6: Business, People, Governance, Platform, Security, Operations." },
+      { cat: "CAF", q: "En CAF, la perspectiva que se ocupa de la CAPACITACIÓN, cultura y gestión del cambio del equipo.", a: "Perspectiva People (Personas). (Governance = riesgo/control; Business = ROI.)" },
+      { cat: "CAF", q: "En CAF, la perspectiva de gestionar RIESGOS, medir y controlar el gasto del portafolio.", a: "Perspectiva Governance (Gobernanza)." },
+      { cat: "Migración", q: "Estrategia de migración que mueve la app TAL CUAL, sin cambios ('lift and shift').", a: "Rehost. (Refactor = rediseñar; Replatform = pequeños ajustes; Repurchase = cambiar a SaaS.)" }
     ],
     examNotes: [
       {
@@ -496,7 +501,8 @@
           ["Tiempo", "90 minutos. ~1,3 min por pregunta."],
           ["Aprobar", "700 de 1000 (escala). No hay penalización por adivinar: RESPONDE TODAS."],
           ["Tipos", "Opción única y opción múltiple (te dice cuántas elegir)."],
-          ["Dominios", "D1 Conceptos 24% · D2 Seguridad 30% · D3 Tecnología 34% · D4 Facturación 12%."]
+          ["Dominios", "D1 Conceptos 24% · D2 Seguridad 30% · D3 Tecnología 34% · D4 Facturación 12%."],
+          ["⚠️ IDIOMA (clave)", "La traducción al español a veces está MAL. En el examen hay un botón para ver la pregunta en INGLÉS. Si una pregunta en español suena rara o confusa, cámbiala a inglés y léela ahí. Los NOMBRES de servicios (S3, EC2...) no se traducen: fíjate en esos."]
         ]
       },
       {
@@ -508,6 +514,32 @@
           ["CapEx vs OpEx", "CapEx = comprar por adelantado. OpEx = pagas por uso (la nube)."],
           ["Modelos de servicio", "IaaS = tú controlas el SO (EC2). PaaS = subes tu código (Beanstalk). SaaS = app lista para usar (Gmail, WorkMail)."],
           ["Despliegue", "Nube pública · Privada (on-premise) · Híbrida (mezcla, ej. Direct Connect)."]
+        ]
+      },
+      {
+        title: "🧭 AWS CAF · 6 perspectivas (¡SALE EN EL EXAMEN!)",
+        rows: [
+          ["¿Qué es?", "Cloud Adoption Framework: la GUÍA de AWS para planificar cómo una empresa se pasa a la nube. No es un servicio, es un marco de planificación."],
+          ["Se divide en", "6 'perspectivas' en 2 grupos: 3 de NEGOCIO (personas) y 3 TÉCNICAS. Piensa: 'gente vs. máquinas'."],
+          ["1. Business (Negocio)", "Que la inversión en nube dé resultados al negocio (ROI, caso de negocio). Personas de negocio."],
+          ["2. People (Personas)", "Cultura, roles, capacitación del equipo, gestión del cambio. Preparar a la GENTE."],
+          ["3. Governance (Gobernanza)", "Gestionar y medir: riesgos, portafolio, control del gasto. Que todo esté bajo control."],
+          ["4. Platform (Plataforma)", "Construir y modernizar la infraestructura y las aplicaciones en la nube. Lo TÉCNICO de armar."],
+          ["5. Security (Seguridad)", "Confidencialidad, integridad y disponibilidad. Proteger datos y sistemas."],
+          ["6. Operations (Operaciones)", "Operar y monitorear los sistemas al nivel acordado con el negocio (que funcione día a día)."],
+          ["Truco para memorizar", "Negocio: Business, People, Governance (B-P-G). Técnicas: Platform, Security, Operations (P-S-O). Si la pregunta habla de personas/capacitación → People. De riesgo/control → Governance."]
+        ]
+      },
+      {
+        title: "🔄 Estrategias de migración (las 7 R)",
+        rows: [
+          ["Rehost", "'Lift and shift': mover tal cual, sin cambios. Lo más rápido."],
+          ["Replatform", "Mover con pequeños ajustes (ej. pasar a RDS gestionado). 'Lift, tinker and shift'."],
+          ["Repurchase", "Cambiar a un producto distinto (ej. pasar a un SaaS)."],
+          ["Refactor / Re-architect", "Rediseñar la app para aprovechar la nube. Lo más caro y lento."],
+          ["Retire", "Apagar lo que ya no se usa."],
+          ["Retain", "Dejarlo por ahora on-premise (no migrar todavía)."],
+          ["Relocate", "Mover sin cambios a nivel de infraestructura (ej. VMware)."]
         ]
       },
       {
@@ -931,7 +963,14 @@
       q("cost-17", "costs", 4, "Un equipo sospecha que sus instancias EC2 están sobredimensionadas y quiere recomendaciones basadas en el uso real de CPU y memoria. ¿Qué servicio le entrega ese análisis?", ["AWS Compute Optimizer", "AWS Cost Explorer", "AWS Budgets", "Amazon CloudWatch"], 0, "AWS Compute Optimizer analiza las métricas de uso reales y recomienda el tipo y tamaño de recurso óptimo para reducir costos y mejorar el rendimiento.", ["Correcto: Compute Optimizer recomienda el tamaño óptimo según el uso real.", "Cost Explorer muestra en qué se gastó, pero no sugiere el tipo de instancia.", "Budgets alerta cuando el gasto supera un umbral, sin analizar el uso técnico.", "CloudWatch entrega las métricas en crudo, sin convertirlas en recomendaciones."]),
       q("cost-18", "costs", 4, "Antes de pasar a producción, un arquitecto quiere revisar su carga de trabajo contra las buenas prácticas de los seis pilares y recibir un plan de mejoras. ¿Qué herramienta usa?", ["AWS Trusted Advisor", "AWS Well-Architected Tool", "AWS Compute Optimizer", "AWS Service Catalog"], 1, "La AWS Well-Architected Tool guía una revisión de la carga de trabajo contra los pilares del marco y entrega un plan de mejoras priorizado.", ["Trusted Advisor revisa la cuenta en general, no la arquitectura de una carga concreta.", "Correcto: la Well-Architected Tool revisa la carga contra los seis pilares.", "Compute Optimizer solo recomienda tamaños de recursos según su uso real.", "Service Catalog publica productos aprobados, sin evaluar ninguna arquitectura."]),
       q("cost-19", "costs", 4, "Una empresa sin experiencia interna en AWS busca una consultora certificada que la acompañe en su migración. ¿Dónde debe buscarla?", ["AWS Marketplace", "AWS Partner Network", "AWS Professional Services", "AWS Support Center"], 1, "La AWS Partner Network (APN) es el directorio global de socios consultores y tecnológicos certificados que pueden acompañar proyectos de los clientes.", ["Marketplace vende software de terceros, no servicios de consultoría certificada.", "Correcto: la APN reúne a los socios consultores certificados de AWS.", "Professional Services es el equipo interno de AWS, no un directorio de socios.", "El Support Center atiende casos técnicos, no busca consultoras para proyectos."]),
-      q("cost-20", "costs", 4, "Una empresa lleva en planillas el control de sus licencias de software comercial en AWS y quiere evitar excederse de los términos acordados. ¿Qué servicio le ayuda?", ["AWS License Manager", "AWS Config", "AWS Systems Manager", "AWS Artifact"], 0, "AWS License Manager permite definir reglas de licenciamiento, hacerlas cumplir y llevar un inventario centralizado del uso de las licencias comerciales.", ["Correcto: License Manager controla y hace cumplir las reglas de licencias.", "Config evalúa la configuración de recursos, sin administrar términos de licencias.", "Systems Manager opera y parcha instancias, no controla el uso de licencias.", "Artifact entrega documentos de compliance de AWS, no gestiona licencias del cliente."])
+      q("cost-20", "costs", 4, "Una empresa lleva en planillas el control de sus licencias de software comercial en AWS y quiere evitar excederse de los términos acordados. ¿Qué servicio le ayuda?", ["AWS License Manager", "AWS Config", "AWS Systems Manager", "AWS Artifact"], 0, "AWS License Manager permite definir reglas de licenciamiento, hacerlas cumplir y llevar un inventario centralizado del uso de las licencias comerciales.", ["Correcto: License Manager controla y hace cumplir las reglas de licencias.", "Config evalúa la configuración de recursos, sin administrar términos de licencias.", "Systems Manager opera y parcha instancias, no controla el uso de licencias.", "Artifact entrega documentos de compliance de AWS, no gestiona licencias del cliente."]),
+
+      q("caf-01", "cloud-adoption", 1, "Una empresa quiere una guía estructurada para planificar cómo mover toda su organización a la nube, alineando negocio y tecnología. ¿Qué recurso de AWS describe este marco?", ["AWS Well-Architected Framework", "AWS Cloud Adoption Framework (CAF)", "AWS Trusted Advisor", "AWS Artifact"], 1, "El AWS Cloud Adoption Framework (CAF) organiza la planificación de la adopción de la nube en seis perspectivas que alinean las áreas de negocio y técnicas.", ["Well-Architected evalúa la arquitectura de una carga de trabajo concreta, no la adopción a nivel organización.", "Correcto: el CAF es el marco para planificar la adopción de la nube en toda la empresa.", "Trusted Advisor da recomendaciones sobre una cuenta existente, no un marco de adopción.", "Artifact entrega informes de compliance, no un marco de planificación."]),
+      q("caf-02", "cloud-adoption", 1, "En el AWS CAF, ¿cuál perspectiva se enfoca en la cultura, los roles, la capacitación y la gestión del cambio del personal?", ["Business", "People", "Governance", "Operations"], 1, "La perspectiva People (Personas) del CAF cubre cultura organizacional, estructura de roles, desarrollo de habilidades y gestión del cambio.", ["Business se centra en alinear la inversión en nube con resultados de negocio (ROI).", "Correcto: People trata sobre las personas, su capacitación y el cambio cultural.", "Governance trata la gestión de riesgos, el control y la medición del portafolio.", "Operations se ocupa de operar y monitorear los sistemas en el día a día."]),
+      q("caf-03", "cloud-adoption", 1, "En el AWS CAF, la gestión de riesgos, el control del gasto y la medición del portafolio de proyectos corresponden a la perspectiva…", ["Platform", "Security", "Governance", "People"], 2, "La perspectiva Governance (Gobernanza) del CAF se encarga de gestionar y medir la iniciativa de nube: riesgos, cumplimiento, portafolio y control financiero.", ["Platform trata de construir y modernizar la infraestructura y las aplicaciones.", "Security trata de proteger la confidencialidad, integridad y disponibilidad.", "Correcto: Governance gestiona riesgo, control y medición del portafolio.", "People trata sobre cultura, roles y capacitación del personal."]),
+      q("caf-04", "cloud-adoption", 1, "Una empresa decide mover una aplicación a AWS tal cual, sin cambiar su código ('lift and shift'), para migrar rápido. ¿Qué estrategia de migración es?", ["Rehost", "Refactor", "Repurchase", "Retire"], 0, "Rehost ('lift and shift') mueve la aplicación sin modificaciones; es la estrategia más rápida para migrar cargas a la nube.", ["Correcto: Rehost mueve la aplicación tal cual, sin cambios.", "Refactor implica rediseñar la aplicación para aprovechar servicios de nube; es lo más costoso.", "Repurchase es cambiar a un producto distinto, típicamente una solución SaaS.", "Retire es dar de baja lo que ya no se usa, no migrarlo."]),
+      q("caf-05", "cloud-adoption", 1, "Durante la planificación de migración, un equipo decide reemplazar su sistema de correo propio por una solución SaaS de terceros. ¿Qué estrategia de las 7 R representa?", ["Replatform", "Repurchase", "Relocate", "Retain"], 1, "Repurchase significa dejar de mantener la solución actual y cambiar a un producto diferente, habitualmente un servicio SaaS.", ["Replatform mueve con pequeños ajustes, pero conserva la misma aplicación base.", "Correcto: Repurchase es cambiar a otro producto, como pasar a un SaaS.", "Relocate traslada la infraestructura sin cambios (por ejemplo, VMware) a la nube.", "Retain es mantener la carga on-premise por ahora, sin migrarla."]),
+      q("caf-06", "cloud-adoption", 1, "En el AWS CAF, construir y modernizar la infraestructura y las aplicaciones para que funcionen en la nube corresponde a la perspectiva…", ["Platform", "Business", "People", "Governance"], 0, "La perspectiva Platform (Plataforma) del CAF se ocupa de diseñar, construir y modernizar la infraestructura y las cargas de trabajo en la nube.", ["Correcto: Platform trata de construir y modernizar infraestructura y aplicaciones.", "Business alinea la inversión en nube con los objetivos del negocio.", "People trata de cultura, roles y capacitación de las personas.", "Governance gestiona riesgo, control y medición del portafolio."])
     ]
   };
 }());

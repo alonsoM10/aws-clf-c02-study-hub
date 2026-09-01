@@ -488,6 +488,152 @@
       { cat: "Conceptos", q: "No tener que predecir la capacidad con años; crecer y reducir según la demanda en minutos.", a: "Agilidad y elasticidad. (Economía de escala = precio más bajo por volumen.)" },
       { cat: "Conceptos", q: "Solo usar una app lista en el navegador, sin instalar ni administrar nada.", a: "SaaS. (PaaS = subir tu código. IaaS = tú controlas el SO.)" }
     ],
+    examNotes: [
+      {
+        title: "📋 Formato del examen",
+        rows: [
+          ["Preguntas", "65 en total: 50 puntuadas + 15 de prueba (no cuentan)."],
+          ["Tiempo", "90 minutos. ~1,3 min por pregunta."],
+          ["Aprobar", "700 de 1000 (escala). No hay penalización por adivinar: RESPONDE TODAS."],
+          ["Tipos", "Opción única y opción múltiple (te dice cuántas elegir)."],
+          ["Dominios", "D1 Conceptos 24% · D2 Seguridad 30% · D3 Tecnología 34% · D4 Facturación 12%."]
+        ]
+      },
+      {
+        title: "☁️ Conceptos de la nube (D1)",
+        rows: [
+          ["6 ventajas", "1) Cambiar gasto fijo (CapEx) por variable (OpEx). 2) Economía de escala. 3) Dejar de adivinar capacidad. 4) Velocidad y agilidad. 5) No gastar en datacenters. 6) Global en minutos."],
+          ["Agilidad / elasticidad", "Crecer o reducir según demanda en minutos, sin predecir a años."],
+          ["Economía de escala", "Precio más bajo por volumen (muchos clientes comparten)."],
+          ["CapEx vs OpEx", "CapEx = comprar por adelantado. OpEx = pagas por uso (la nube)."],
+          ["Modelos de servicio", "IaaS = tú controlas el SO (EC2). PaaS = subes tu código (Beanstalk). SaaS = app lista para usar (Gmail, WorkMail)."],
+          ["Despliegue", "Nube pública · Privada (on-premise) · Híbrida (mezcla, ej. Direct Connect)."]
+        ]
+      },
+      {
+        title: "🏛️ Well-Architected: 6 pilares",
+        rows: [
+          ["Excelencia operativa", "Operar como código, automatizar, mejorar procesos y aprender de los fallos."],
+          ["Seguridad", "Proteger datos, identidades y sistemas."],
+          ["Fiabilidad", "El sistema se RECUPERA solo de fallas y prueba la recuperación."],
+          ["Eficiencia de rendimiento", "Usar los recursos de forma eficiente y adaptarse a la demanda."],
+          ["Optimización de costos", "No pagar de más; ajustar el gasto al valor."],
+          ["Sostenibilidad", "Reducir el impacto ambiental de las cargas de trabajo."]
+        ]
+      },
+      {
+        title: "🤝 Responsabilidad compartida",
+        rows: [
+          ["AWS (de la nube)", "Hardware, red física, datacenters, virtualización."],
+          ["Cliente (en la nube)", "Tus datos, IAM, cifrado, configuración, y el SO SEGÚN el servicio."],
+          ["EC2", "TÚ parchas el sistema operativo."],
+          ["RDS / Lambda", "AWS parcha el SO por ti (servicios administrados)."],
+          ["Regla mental", "Cuanto más administrado el servicio, menos te toca a ti."]
+        ]
+      },
+      {
+        title: "🖥️ Cómputo (D3)",
+        rows: [
+          ["EC2", "Servidores virtuales (IaaS). Tú manejas el SO."],
+          ["Lambda", "Serverless: solo código, pagas por ejecución. Corre por eventos."],
+          ["Elastic Beanstalk", "Subes el código y AWS arma servidor + escalado (PaaS)."],
+          ["CloudFormation", "Infraestructura como código con plantillas repetibles."],
+          ["ECS / EKS / Fargate", "Contenedores. Fargate = contenedores serverless (sin gestionar servidores)."],
+          ["Precios EC2", "On-Demand (flexible) · Reserved 1-3 años (hasta ~72% desc.) · Spot (más barato, interrumpible) · Savings Plans · Dedicated Host."],
+          ["Auto Scaling", "Suma/quita instancias según demanda (elasticidad)."]
+        ]
+      },
+      {
+        title: "💾 Almacenamiento (D3)",
+        rows: [
+          ["S3", "Objetos, escalable, por internet. Clases: Standard, Intelligent-Tiering, Standard-IA, One Zone-IA, Glacier (archivo barato)."],
+          ["EBS", "Disco de bloque para EC2. PERSISTE al detener la instancia. Una AZ."],
+          ["Instance Store", "Disco efímero: se BORRA al detener la instancia."],
+          ["EFS", "Sistema de archivos compartido para varias EC2 (Linux). Escala solo."],
+          ["Storage Gateway", "Puente entre on-premise y la nube."],
+          ["Snow Family", "Migrar TB/PB por dispositivo físico cuando la red no da abasto."]
+        ]
+      },
+      {
+        title: "🗄️ Bases de datos (D3)",
+        rows: [
+          ["RDS", "Relacional administrada (MySQL, PostgreSQL, etc.)."],
+          ["Aurora", "Relacional compatible MySQL/PostgreSQL, hasta 5x rendimiento. El '5x' siempre es Aurora."],
+          ["RDS Multi-AZ", "Alta disponibilidad: copia en otra AZ que hace failover solo."],
+          ["Read Replica", "Escala LECTURAS (no es failover)."],
+          ["DynamoDB", "NoSQL serverless, milisegundos, escala enorme (clave-valor)."],
+          ["Redshift", "Data warehouse / analítica (consultas grandes tipo BI)."],
+          ["ElastiCache", "Caché en memoria (Redis/Memcached) para acelerar."]
+        ]
+      },
+      {
+        title: "🌐 Redes y entrega (D3)",
+        rows: [
+          ["VPC", "Tu red privada aislada en AWS."],
+          ["Security Group", "Firewall a nivel INSTANCIA, con estado, solo permite."],
+          ["NACL", "Firewall a nivel SUBRED, sin estado, permite Y deniega."],
+          ["Route 53", "DNS y enrutamiento (dominios)."],
+          ["CloudFront", "CDN: cachea contenido cerca del usuario (baja latencia global)."],
+          ["Direct Connect", "Conexión física dedicada on-premise ↔ AWS (privada, estable)."],
+          ["Site-to-Site VPN", "Conexión cifrada por internet on-premise ↔ AWS."]
+        ]
+      },
+      {
+        title: "🔐 Seguridad e identidad (D2)",
+        rows: [
+          ["IAM", "Usuarios, grupos, roles y políticas. Gratis. Principio de mínimo privilegio."],
+          ["Cuenta root", "No usar a diario. Activar MFA. Solo tareas que la exigen."],
+          ["Roles IAM", "Permisos temporales para servicios (ej. EC2 accede a S3). Nunca claves fijas."],
+          ["MFA", "Segundo factor. Actívalo, sobre todo en root."],
+          ["Cognito", "Login de usuarios de tu APP (Google/Facebook, registro)."],
+          ["IAM Identity Center", "Acceso de EMPLEADOS a cuentas AWS (SSO)."],
+          ["Secrets Manager", "Guarda y ROTA automáticamente contraseñas/credenciales."],
+          ["KMS", "Crea y gestiona claves de CIFRADO. CloudHSM = hardware dedicado."],
+          ["WAF", "Filtra web: SQL injection, XSS. Shield = protección DDoS."],
+          ["GuardDuty", "Detecta amenazas/actividad maliciosa (inteligente)."],
+          ["Inspector", "Vulnerabilidades (CVE) en EC2. Macie = datos sensibles (PII) en S3."]
+        ]
+      },
+      {
+        title: "🏢 Gobierno, cumplimiento y monitoreo (D1/D2)",
+        rows: [
+          ["Organizations", "Agrupa cuentas + factura única + descuentos por volumen (SCP)."],
+          ["Control Tower", "Entorno multicuenta seguro desde el día 1 (landing zone + barreras)."],
+          ["Artifact", "Descargar informes de compliance (SOC, ISO, PCI)."],
+          ["Config", "Historial y cumplimiento de la CONFIGURACIÓN de recursos."],
+          ["CloudTrail", "QUIÉN hizo qué llamada API, cuándo y desde dónde (auditoría)."],
+          ["CloudWatch", "Métricas, logs y alarmas (rendimiento/operación)."],
+          ["Trusted Advisor", "Recomienda en 5 áreas: costo, rendimiento, seguridad, tolerancia a fallos, límites."],
+          ["Recuerda", "CloudTrail = API/quién · CloudWatch = métricas · Config = configuración."]
+        ]
+      },
+      {
+        title: "🚚 Migración e integración (D3)",
+        rows: [
+          ["DMS", "Migrar bases de datos (replica cambios durante la transición)."],
+          ["DataSync", "Mover archivos por red de forma programada."],
+          ["Migration Hub", "Ver el progreso de todas las migraciones en un lugar."],
+          ["Snowball / Snowmobile", "Mover mucho dato por dispositivo físico."],
+          ["SNS", "Notificaciones (pub/sub, envía a muchos: email, SMS)."],
+          ["SQS", "Cola de mensajes (desacopla componentes)."],
+          ["EventBridge", "Enruta EVENTOS a acciones (ej. cambio de estado → Lambda)."]
+        ]
+      },
+      {
+        title: "💰 Facturación y precios (D4)",
+        rows: [
+          ["3 formas de pago", "Cómputo, almacenamiento y transferencia de datos SALIENTE (entrante gratis)."],
+          ["Cost Explorer", "Visualizar y analizar gastos pasados y tendencias."],
+          ["Budgets", "Alertas cuando el gasto/uso supera un límite."],
+          ["Pricing Calculator", "Estimar el costo ANTES de desplegar."],
+          ["Cost & Usage Report", "Reporte detallado, el más completo de costos."],
+          ["Soporte Basic", "Gratis: foros, docs, health check básico."],
+          ["Soporte Developer", "Pruebas: soporte por correo en horario laboral."],
+          ["Soporte Business", "Producción: 24/7 por teléfono/chat, Trusted Advisor completo."],
+          ["Soporte Enterprise", "Crítico: TAM dedicado, 15 min para casos críticos."]
+        ]
+      }
+    ],
     questions: [
       q("obs-01", "observability", 2, "Un auditor necesita saber qué identidad eliminó una regla de un security group, a qué hora y desde qué dirección IP. ¿Qué servicio debe revisar?", ["Amazon CloudWatch", "AWS CloudTrail", "AWS Config", "Amazon GuardDuty"], 1, "CloudTrail registra actividad de API y la identidad que realizó la acción; por eso sirve para auditoría e investigación.", ["CloudWatch monitorea métricas, logs y alarmas; no es el historial principal de llamadas API.", "Correcto: CloudTrail conserva el rastro de la actividad de la cuenta.", "Config muestra configuración e historial de recursos, pero la pregunta pide quién ejecutó la acción API.", "GuardDuty detecta actividad potencialmente maliciosa, no es el registro de auditoría principal."]),
       q("obs-02", "observability", 2, "Una aplicación debe enviar una alerta cuando el uso promedio de CPU de una instancia EC2 supere 80% durante cinco minutos. ¿Qué se usa?", ["Una alarma de Amazon CloudWatch", "Un trail de AWS CloudTrail", "AWS Artifact", "AWS IAM Access Analyzer"], 0, "CloudWatch recopila métricas como CPU y sus alarmas pueden notificar o activar acciones cuando se cumple un umbral.", ["Correcto: una alarma de CloudWatch evalúa una métrica contra un umbral.", "CloudTrail audita llamadas API, no evalúa métricas de CPU.", "Artifact entrega documentos de compliance.", "Access Analyzer ayuda a identificar acceso externo o políticas, no rendimiento."]),

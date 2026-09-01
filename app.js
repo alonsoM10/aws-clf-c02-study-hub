@@ -304,6 +304,16 @@
     app.innerHTML = `<section class="results panel"><p class="kicker">SESIÓN COMPLETADA</p><div class="score-ring"><strong>${correct}<small>/${total}</small></strong><span>${percent}%</span></div><h1>${percent >= 80 ? "Este bloque está sólido." : "Ya sabes exactamente dónde insistir."}</h1><p>${percent >= 80 ? "Cumpliste la meta de 8/10. Mantén una sesión mixta más adelante para comprobar que la diferencia sigue automática." : "No memorices solo la respuesta: vuelve a mirar el descarte, luego repite este frente hasta obtener 8/10."}</p>${wrongAreas.length ? `<div class="reinforce"><h2>Reforzar ahora</h2>${wrongAreas.map(area => `<a href="#/practicar/${area.id}">${escapeHtml(area.title)} <span>→</span></a>`).join("")}</div>` : ""}<div class="result-actions"><button type="button" class="button primary" data-action="restart">Repetir bloque</button><a class="button secondary" href="#/practicar">Elegir otro frente</a></div></section>`;
   }
 
+  function renderNotes() {
+    const sections = data.examNotes || [];
+    app.innerHTML = `
+      <section class="page-intro compact"><p class="kicker">APUNTES DEL EXAMEN</p><h1>Todo lo importante,<br><em>en una sola página.</em></h1><p>Tu resumen final para repasar mañana antes de entrar. Léelo de arriba a abajo con calma; no memorices, solo reconoce.</p></section>
+      <section class="notes-wrap">
+        ${sections.map(sec => `<article class="notes-card"><h2>${escapeHtml(sec.title)}</h2><dl class="notes-list">${sec.rows.map(r => `<div class="notes-row"><dt>${escapeHtml(r[0])}</dt><dd>${escapeHtml(r[1])}</dd></div>`).join("")}</dl></article>`).join("")}
+      </section>
+      <p class="listen-note">💡 Antes del examen: respira, lee la pregunta completa y busca la <b>palabra gatillo</b>. Responde TODAS, no hay penalización. Tú puedes. 🚀</p>`;
+  }
+
   function renderPolish() {
     const items = data.polish || [];
     app.innerHTML = `
@@ -742,6 +752,7 @@
     else if (route.startsWith("#/aprender/")) renderLearnDomain(Number(route.split("/")[2]));
     else if (route === "#/aprender") renderLearnHome();
     else if (route === "#/examen") renderExam();
+    else if (route === "#/apuntes") renderNotes();
     else if (route === "#/pulir") renderPolish();
     else if (route === "#/chuleta") renderCheatSheet();
     else renderHome();

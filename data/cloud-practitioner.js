@@ -534,24 +534,56 @@
       {
         title: "🖥️ Cómputo (D3)",
         rows: [
-          ["EC2", "Servidores virtuales (IaaS). Tú manejas el SO."],
-          ["Lambda", "Serverless: solo código, pagas por ejecución. Corre por eventos."],
-          ["Elastic Beanstalk", "Subes el código y AWS arma servidor + escalado (PaaS)."],
-          ["CloudFormation", "Infraestructura como código con plantillas repetibles."],
-          ["ECS / EKS / Fargate", "Contenedores. Fargate = contenedores serverless (sin gestionar servidores)."],
-          ["Precios EC2", "On-Demand (flexible) · Reserved 1-3 años (hasta ~72% desc.) · Spot (más barato, interrumpible) · Savings Plans · Dedicated Host."],
-          ["Auto Scaling", "Suma/quita instancias según demanda (elasticidad)."]
+          ["EC2", "Un servidor virtual: como arrendar un computador en la nube. Tú instalas y manejas el sistema operativo. Es IaaS."],
+          ["Lambda", "Corres SOLO tu código, sin servidor. AWS lo ejecuta cuando pasa algo (un evento) y pagas solo por esos milisegundos. Serverless."],
+          ["Elastic Beanstalk", "Subes tu código y AWS te arma el servidor, el balanceador y el escalado solo. Tú te olvidas de la infra. Es PaaS."],
+          ["CloudFormation", "Escribes la infraestructura en una plantilla (archivo) y AWS la crea igual todas las veces. 'Infraestructura como código'."],
+          ["Auto Scaling", "Suma servidores cuando hay mucha demanda y quita cuando baja. Eso es ELASTICIDAD."]
+        ]
+      },
+      {
+        title: "📦 Contenedores: ECS vs EKS vs Fargate",
+        rows: [
+          ["¿Qué es un contenedor?", "Una caja que empaca tu app con todo lo que necesita, para que corra igual en cualquier parte. Docker es el más conocido."],
+          ["ECS", "El servicio de AWS para correr contenedores, con la tecnología PROPIA de AWS. Más simple. (Elastic Container Service.)"],
+          ["EKS", "Lo mismo, pero usando KUBERNETES (el estándar abierto de la industria). Se elige si el equipo ya usa Kubernetes. (Elastic Kubernetes Service.)"],
+          ["Fargate", "NO es otro servicio aparte: es el modo 'sin servidor' de ECS/EKS. AWS pone y maneja los servidores por ti; tú solo pones los contenedores."],
+          ["Truco de examen", "ECS = contenedores estilo AWS · EKS = contenedores con Kubernetes · Fargate = que AWS maneje los servidores por ti (serverless)."]
+        ]
+      },
+      {
+        title: "💵 Precios de EC2 (cómo pagas)",
+        rows: [
+          ["On-Demand", "Pagas por hora/segundo sin compromiso. Flexible pero lo más caro. Para pruebas o cargas impredecibles."],
+          ["Reserved Instances", "Te comprometes 1 o 3 años y ahorras hasta ~72%. Para cargas fijas y constantes."],
+          ["Savings Plans", "Te comprometes a un gasto por hora (1-3 años) y ahorras parecido a Reserved, pero más flexible."],
+          ["Spot", "Lo MÁS barato (hasta ~90%), pero AWS te lo puede quitar cuando lo necesite. Solo para cargas que aguantan cortes."],
+          ["Dedicated Host", "Un servidor físico entero solo para ti. Para licencias especiales o requisitos de cumplimiento."],
+          ["Truco", "Fijo y largo plazo → Reserved/Savings · Barato e interrumpible → Spot · Sin compromiso → On-Demand."]
         ]
       },
       {
         title: "💾 Almacenamiento (D3)",
         rows: [
-          ["S3", "Objetos, escalable, por internet. Clases: Standard, Intelligent-Tiering, Standard-IA, One Zone-IA, Glacier (archivo barato)."],
-          ["EBS", "Disco de bloque para EC2. PERSISTE al detener la instancia. Una AZ."],
-          ["Instance Store", "Disco efímero: se BORRA al detener la instancia."],
-          ["EFS", "Sistema de archivos compartido para varias EC2 (Linux). Escala solo."],
-          ["Storage Gateway", "Puente entre on-premise y la nube."],
-          ["Snow Family", "Migrar TB/PB por dispositivo físico cuando la red no da abasto."]
+          ["S3", "Guarda ARCHIVOS (objetos) sueltos: fotos, backups, videos. Casi infinito y se accede por internet. Se guarda en 'buckets'."],
+          ["EBS", "Un DISCO duro para pegarle a UNA instancia EC2. PERSISTE (los datos siguen) aunque apagues la instancia. Vive en una sola AZ."],
+          ["Instance Store", "Disco pegado a EC2 pero EFÍMERO: se BORRA todo al apagar/detener la instancia. Solo para datos temporales."],
+          ["EFS", "Un disco de archivos COMPARTIDO que varias EC2 (Linux) usan a la vez. Crece y se achica solo."],
+          ["FSx", "Sistema de archivos para casos especiales (ej. Windows o alto rendimiento)."],
+          ["Storage Gateway", "Puente entre tu datacenter (on-premise) y la nube."],
+          ["Truco", "Archivos sueltos por internet → S3 · Disco de una EC2 → EBS · Disco compartido entre EC2 → EFS."]
+        ]
+      },
+      {
+        title: "🗂️ Clases de S3 (por costo)",
+        rows: [
+          ["S3 Standard", "Acceso frecuente y rápido. Lo normal. Más caro pero siempre disponible."],
+          ["Intelligent-Tiering", "AWS mueve tus datos solo a la clase más barata según cuánto los usas. Si no sabes el patrón, esta."],
+          ["Standard-IA", "'Infrequent Access': acceso poco frecuente. Más barato de guardar, pagas al recuperar. En varias AZ."],
+          ["One Zone-IA", "Igual que IA pero en UNA sola AZ. Más barato, pero si esa AZ falla, se pierde. Para datos recreables."],
+          ["Glacier", "ARCHIVO barato para datos que casi no tocas (backups, cumplimiento). Recuperar tarda de minutos a horas."],
+          ["Glacier Deep Archive", "El MÁS barato de todos. Recuperar tarda horas. Para guardar años por ley."],
+          ["Truco", "Más lo usas → Standard · Casi nunca → Glacier · No sé el patrón → Intelligent-Tiering."]
         ]
       },
       {

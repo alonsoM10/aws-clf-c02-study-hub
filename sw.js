@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_NAME = "clf-c02-study-hub-v15";
+const CACHE_NAME = "clf-c02-study-hub-v16";
 
 const CORE_ASSETS = [
   "./",

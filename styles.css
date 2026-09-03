@@ -302,6 +302,10 @@ button:focus-visible, a:focus-visible { outline: 3px solid var(--amber); outline
 .notes-row dt { margin: 0; font-weight: 700; font-size: 13.5px; color: var(--green-dark); }
 .notes-row dd { margin: 0; font-size: 14px; line-height: 1.5; color: var(--ink); }
 @media (max-width: 720px) { .notes-wrap { grid-template-columns: 1fr; } }
+.scope-count { display: flex; align-items: center; gap: 16px; padding: 18px 22px; margin-bottom: 20px; }
+.scope-count strong { font-size: 34px; line-height: 1; color: var(--green); font-family: "Fraunces", Georgia, serif; }
+.scope-count span { font-size: 14px; color: var(--muted); }
+.scope-n { display: inline-block; margin-left: 6px; font: 600 11px "DM Mono", monospace; color: var(--green); background: var(--green-soft, rgba(15,118,110,.12)); border-radius: 999px; padding: 1px 8px; vertical-align: middle; }
 
 /* ---- Escuchar (audio) ---- */
 .listen-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 24px; }

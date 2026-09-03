@@ -721,6 +721,191 @@
         ]
       }
     ],
+    scope: {
+      intro: "Esto es el ALCANCE OFICIAL del examen CLF-C02 (de la guía de AWS): todos los servicios que pueden aparecer, agrupados por categoría, con qué hace cada uno en simple. No tienes que dominarlos todos a fondo — con reconocer qué hace cada uno basta para la Practitioner.",
+      categories: [
+        { cat: "Cómputo", items: [
+          ["Amazon EC2", "Servidores virtuales; tú manejas el SO (IaaS)."],
+          ["AWS Elastic Beanstalk", "Subes tu código y AWS arma la infra (PaaS)."],
+          ["AWS Lambda", "Ejecuta código por eventos, sin servidores (serverless)."],
+          ["AWS Fargate", "Ejecuta contenedores sin gestionar servidores (serverless)."],
+          ["AWS Batch", "Ejecuta trabajos por lotes a gran escala."],
+          ["Amazon Lightsail", "Servidores simples y baratos a precio fijo (para empezar)."],
+          ["AWS Outposts", "Hardware de AWS en TU datacenter (híbrido)."],
+          ["AWS Local Zones", "Cómputo AWS cerca de grandes ciudades (baja latencia)."],
+          ["AWS Wavelength", "AWS dentro de redes 5G (ultra baja latencia móvil)."]
+        ]},
+        { cat: "Contenedores", items: [
+          ["Amazon ECS", "Orquestar contenedores con tecnología propia de AWS."],
+          ["Amazon EKS", "Orquestar contenedores con Kubernetes."],
+          ["Amazon ECR", "Registro/repositorio de imágenes de contenedores (Docker)."]
+        ]},
+        { cat: "Almacenamiento", items: [
+          ["Amazon S3", "Objetos (archivos): fotos, backups. Casi infinito, por internet."],
+          ["Amazon S3 Glacier", "Archivo barato para datos que casi no tocas."],
+          ["Amazon EBS", "Disco de bloque para UNA EC2; persiste al apagar."],
+          ["Amazon EFS", "Sistema de archivos COMPARTIDO por varias EC2 (Linux)."],
+          ["Amazon FSx", "Archivos especializados (Windows, alto rendimiento)."],
+          ["AWS Storage Gateway", "Puente de almacenamiento on-premise ↔ nube."],
+          ["AWS Backup", "Copias de seguridad centralizadas de varios servicios."],
+          ["AWS Elastic Disaster Recovery", "Recuperación ante desastres (replica servidores)."]
+        ]},
+        { cat: "Bases de datos", items: [
+          ["Amazon RDS", "Relacional gestionada (MySQL, PostgreSQL, etc.)."],
+          ["Amazon Aurora", "Relacional compatible MySQL/PostgreSQL, 5x rendimiento."],
+          ["Amazon DynamoDB", "NoSQL serverless, milisegundos, clave-valor."],
+          ["Amazon MemoryDB for Redis", "Base en memoria compatible Redis, durable."],
+          ["Amazon Neptune", "Base de datos de grafos (relaciones)."]
+        ]},
+        { cat: "Redes y entrega de contenido", items: [
+          ["Amazon VPC", "Tu red privada aislada en AWS."],
+          ["Amazon Route 53", "DNS y registro de dominios."],
+          ["Amazon CloudFront", "CDN: cachea contenido cerca del usuario."],
+          ["AWS Global Accelerator", "Mejora latencia enrutando por la red de AWS."],
+          ["AWS Direct Connect", "Conexión física privada on-premise ↔ AWS."],
+          ["AWS VPN", "Conexión cifrada por internet on-premise ↔ AWS."],
+          ["Amazon API Gateway", "Crea y gestiona APIs."]
+        ]},
+        { cat: "Seguridad, identidad y cumplimiento", items: [
+          ["AWS IAM", "Usuarios, grupos, roles y políticas. GRATIS."],
+          ["AWS IAM Identity Center", "SSO: acceso de empleados a cuentas AWS."],
+          ["Amazon Cognito", "Login e identidad de usuarios de TU app."],
+          ["AWS Directory Service", "Active Directory gestionado."],
+          ["AWS KMS", "Crear y gestionar claves de cifrado."],
+          ["AWS CloudHSM", "Módulo de hardware DEDICADO para claves."],
+          ["AWS Secrets Manager", "Guarda y ROTA secretos/contraseñas."],
+          ["AWS Certificate Manager (ACM)", "Gestiona certificados SSL/TLS."],
+          ["Amazon GuardDuty", "Detecta amenazas y actividad maliciosa."],
+          ["Amazon Inspector", "Escanea vulnerabilidades (CVE) en EC2/contenedores."],
+          ["Amazon Macie", "Descubre datos sensibles (PII) en S3."],
+          ["Amazon Detective", "Investiga la causa de hallazgos de seguridad."],
+          ["AWS Security Hub", "Panel central del estado de seguridad."],
+          ["AWS Shield", "Protección contra ataques DDoS."],
+          ["AWS WAF", "Filtra tráfico web (SQL injection, XSS)."],
+          ["AWS Network Firewall", "Firewall de red gestionado para la VPC."],
+          ["AWS Firewall Manager", "Gestiona reglas de firewall de forma central."],
+          ["AWS Artifact", "Descargar informes de compliance (SOC, ISO, PCI)."],
+          ["AWS Audit Manager", "Automatiza auditorías y evidencia de compliance."],
+          ["AWS RAM (Resource Access Manager)", "Comparte recursos entre cuentas."]
+        ]},
+        { cat: "Gestión y gobierno", items: [
+          ["AWS Management Console", "La interfaz web para usar AWS."],
+          ["Amazon CloudWatch", "Métricas, logs y alarmas (monitoreo)."],
+          ["AWS CloudTrail", "Registra QUIÉN hizo qué llamada API (auditoría)."],
+          ["AWS Config", "Historial y cumplimiento de la CONFIGURACIÓN."],
+          ["AWS CloudFormation", "Infraestructura como código con plantillas."],
+          ["AWS Organizations", "Agrupa cuentas + factura única + SCP."],
+          ["AWS Control Tower", "Entorno multicuenta seguro desde el día 1."],
+          ["AWS Trusted Advisor", "Recomendaciones en 5 áreas (costo, seguridad, etc.)."],
+          ["AWS Well-Architected Tool", "Revisa tu arquitectura vs los 6 pilares."],
+          ["AWS Auto Scaling", "Ajusta la cantidad de recursos según demanda."],
+          ["AWS Compute Optimizer", "Recomienda el tamaño óptimo de recursos."],
+          ["AWS Systems Manager", "Opera y parcha tu flota de servidores."],
+          ["AWS Service Catalog", "Catálogo de productos de TI aprobados."],
+          ["AWS License Manager", "Controla y hace cumplir licencias de software."],
+          ["AWS Health Dashboard", "Estado de los servicios AWS y de tus recursos."],
+          ["AWS Launch Wizard", "Guía para desplegar apps de terceros (SAP, etc.)."],
+          ["AWS Resource Groups y Tag Editor", "Agrupa y etiqueta recursos."]
+        ]},
+        { cat: "Precios, facturación y soporte", items: [
+          ["AWS Cost Explorer", "Visualizar y analizar gastos pasados y tendencias."],
+          ["AWS Budgets", "Alertas cuando el gasto/uso supera un límite."],
+          ["AWS Cost and Usage Report", "El reporte de costos más detallado."],
+          ["AWS Pricing Calculator", "Estimar el costo ANTES de desplegar."],
+          ["AWS Billing Conductor", "Facturación personalizada para revender/agrupar."],
+          ["AWS Marketplace", "Tienda de software de terceros (paga en tu factura AWS)."],
+          ["AWS Support", "Planes de soporte (ver bloque de planes abajo)."]
+        ]},
+        { cat: "Migración y transferencia", items: [
+          ["AWS DMS", "Migra bases de datos (replica durante la transición)."],
+          ["AWS SCT (Schema Conversion Tool)", "Convierte el esquema entre motores de BD distintos."],
+          ["AWS Snow Family", "Dispositivos físicos para mover mucho dato."],
+          ["AWS Transfer Family", "Transferencia de archivos por SFTP/FTP a S3."],
+          ["AWS Application Discovery Service", "Inventaría tu datacenter antes de migrar."],
+          ["AWS Application Migration Service", "Migra servidores enteros (lift-and-shift)."],
+          ["AWS Migration Hub", "Ve el progreso de TODAS tus migraciones en un lugar."]
+        ]},
+        { cat: "Análisis (Analytics)", items: [
+          ["Amazon Athena", "Consultas SQL sobre datos en S3, serverless."],
+          ["Amazon Redshift", "Data warehouse para análisis a gran escala."],
+          ["Amazon Kinesis", "Ingesta y análisis de datos en tiempo real (streaming)."],
+          ["AWS Glue", "ETL serverless: extraer, transformar y cargar datos."],
+          ["Amazon QuickSight", "Paneles y visualización de datos (BI)."],
+          ["Amazon EMR", "Big data con clúster (Hadoop/Spark)."],
+          ["Amazon OpenSearch Service", "Búsqueda y análisis de logs."],
+          ["Amazon MSK", "Apache Kafka gestionado (streaming de eventos)."],
+          ["AWS Data Exchange", "Buscar y suscribirse a datos de terceros."]
+        ]},
+        { cat: "Integración de aplicaciones", items: [
+          ["Amazon SNS", "Notificaciones pub/sub (email, SMS) a muchos."],
+          ["Amazon SQS", "Cola de mensajes para desacoplar componentes."],
+          ["Amazon EventBridge", "Bus de eventos: conecta eventos con acciones."],
+          ["AWS Step Functions", "Orquesta flujos de varios pasos/servicios."]
+        ]},
+        { cat: "Machine Learning e IA", items: [
+          ["Amazon SageMaker", "Construir, entrenar y desplegar modelos ML."],
+          ["Amazon Translate", "Traducción automática entre idiomas."],
+          ["Amazon Polly", "Texto a voz (lee texto en audio)."],
+          ["Amazon Transcribe", "Voz a texto (audio → texto)."],
+          ["Amazon Comprehend", "NLP: sentimiento y entidades en texto."],
+          ["Amazon Rekognition", "Análisis de imágenes y video."],
+          ["Amazon Textract", "Extrae texto y datos de documentos escaneados."],
+          ["Amazon Lex", "Chatbots y asistentes de voz."],
+          ["Amazon Kendra", "Búsqueda inteligente en documentos empresariales."]
+        ]},
+        { cat: "Herramientas de desarrollo", items: [
+          ["AWS CLI", "Controlar AWS desde la línea de comandos."],
+          ["AWS CloudShell", "Terminal con AWS CLI lista en el navegador."],
+          ["AWS Cloud9", "IDE (editor de código) en el navegador."],
+          ["AWS CodeCommit", "Repositorios Git privados."],
+          ["AWS CodeBuild", "Compila y prueba código (build)."],
+          ["AWS CodeDeploy", "Automatiza despliegues de código."],
+          ["AWS CodePipeline", "CI/CD: orquesta build → test → deploy."],
+          ["AWS CodeArtifact", "Repositorio de dependencias/paquetes."],
+          ["AWS CodeStar", "Panel unificado para proyectos de desarrollo."],
+          ["AWS AppConfig", "Gestiona configuración de apps sin redeploy."],
+          ["AWS X-Ray", "Rastrea y depura peticiones entre servicios."]
+        ]},
+        { cat: "Otras categorías in-scope", items: [
+          ["Amazon Connect", "Centro de contacto / call center en la nube."],
+          ["Amazon SES", "Envío masivo de correos (email)."],
+          ["Amazon WorkSpaces", "Escritorios virtuales (VDI) en la nube."],
+          ["Amazon AppStream 2.0", "Transmite apps de escritorio por streaming."],
+          ["Amazon WorkSpaces Web", "Navegador seguro para acceso web corporativo."],
+          ["AWS Amplify", "Crear y desplegar apps web y móviles rápido."],
+          ["AWS AppSync", "APIs GraphQL gestionadas para apps."],
+          ["AWS Device Farm", "Probar apps en dispositivos reales."],
+          ["AWS IoT Core", "Conecta y gestiona dispositivos IoT."],
+          ["AWS IoT Greengrass", "Lleva capacidades AWS al borde (dispositivos)."],
+          ["AWS Activate for Startups", "Créditos y recursos para startups."],
+          ["AWS IQ", "Contratar expertos AWS certificados por proyecto."],
+          ["AWS Managed Services (AMS)", "AWS opera tu infraestructura por ti."]
+        ]}
+      ],
+      supportPlans: [
+        ["Basic", "GRATIS. Foros, documentación, health checks básicos. Sin soporte técnico."],
+        ["Developer", "Barato. Soporte por CORREO en horario laboral. Para pruebas/desarrollo."],
+        ["Business", "24/7 por teléfono/chat/correo. Trusted Advisor completo. Para PRODUCCIÓN."],
+        ["Enterprise On-Ramp", "Todo Business + respuesta más rápida y un pool de gerentes técnicos (TAM). Paso intermedio."],
+        ["Enterprise", "Lo máximo: TAM DEDICADO, 15 min para casos críticos, Concierge. Misión crítica."]
+      ],
+      concepts: [
+        ["APIs / SDKs / CLI", "3 formas de acceder a AWS por código (además de la consola web)."],
+        ["Infraestructura como código (IaC)", "Definir la infra en archivos (ej. CloudFormation) para repetirla igual."],
+        ["BYOL vs licencia incluida", "Traer tu propia licencia vs. que venga incluida en el servicio."],
+        ["Rightsizing", "Ajustar el tamaño de los recursos a lo que realmente usas (ahorro)."],
+        ["Costos fijos vs variables", "On-premise = fijo (CapEx). Nube = variable, pagas por uso (OpEx)."],
+        ["Transferencia de datos", "La ENTRADA suele ser gratis; la SALIDA (a internet/otra región) se cobra."],
+        ["Etiquetas de asignación de costos", "Tags para saber cuánto gasta cada proyecto/área en la factura."],
+        ["Cifrado en tránsito y en reposo", "Proteger datos mientras viajan y mientras están guardados."],
+        ["Identidad federada", "Iniciar sesión con una identidad externa (ej. corporativa) sin crear usuario nuevo."],
+        ["AWS Partner Network (APN)", "Red de socios/consultoras certificadas de AWS."],
+        ["AWS Professional Services / Solutions Architects", "Equipos de AWS que asesoran en proyectos."],
+        ["re:Post / Knowledge Center / Prescriptive Guidance", "Recursos oficiales de ayuda y documentación."],
+        ["Trust & Safety team", "A quién reportar abuso de recursos de AWS."]
+      ],
+      outOfScope: "NO entran (no pierdas tiempo): Game Tech (GameLift, Lumberyard), Media Services (AWS Elemental*, Amazon IVS) y Robotics (RoboMaker)."
+    },
     questions: [
       q("obs-01", "observability", 2, "Un auditor necesita saber qué identidad eliminó una regla de un security group, a qué hora y desde qué dirección IP. ¿Qué servicio debe revisar?", ["Amazon CloudWatch", "AWS CloudTrail", "AWS Config", "Amazon GuardDuty"], 1, "CloudTrail registra actividad de API y la identidad que realizó la acción; por eso sirve para auditoría e investigación.", ["CloudWatch monitorea métricas, logs y alarmas; no es el historial principal de llamadas API.", "Correcto: CloudTrail conserva el rastro de la actividad de la cuenta.", "Config muestra configuración e historial de recursos, pero la pregunta pide quién ejecutó la acción API.", "GuardDuty detecta actividad potencialmente maliciosa, no es el registro de auditoría principal."]),
       q("obs-02", "observability", 2, "Una aplicación debe enviar una alerta cuando el uso promedio de CPU de una instancia EC2 supere 80% durante cinco minutos. ¿Qué se usa?", ["Una alarma de Amazon CloudWatch", "Un trail de AWS CloudTrail", "AWS Artifact", "AWS IAM Access Analyzer"], 0, "CloudWatch recopila métricas como CPU y sus alarmas pueden notificar o activar acciones cuando se cumple un umbral.", ["Correcto: una alarma de CloudWatch evalúa una métrica contra un umbral.", "CloudTrail audita llamadas API, no evalúa métricas de CPU.", "Artifact entrega documentos de compliance.", "Access Analyzer ayuda a identificar acceso externo o políticas, no rendimiento."]),

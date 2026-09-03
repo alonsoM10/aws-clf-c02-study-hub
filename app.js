@@ -297,6 +297,28 @@
     app.innerHTML = `<section class="results panel"><p class="kicker">SESIÓN COMPLETADA</p><div class="score-ring"><strong>${correct}<small>/${total}</small></strong><span>${percent}%</span></div><h1>${percent >= 80 ? "Este bloque está sólido." : "Ya sabes exactamente dónde insistir."}</h1><p>${percent >= 80 ? "Cumpliste la meta de 8/10. Mantén una sesión mixta más adelante para comprobar que la diferencia sigue automática." : "No memorices solo la respuesta: vuelve a mirar el descarte, luego repite este frente hasta obtener 8/10."}</p>${wrongAreas.length ? `<div class="reinforce"><h2>Reforzar ahora</h2>${wrongAreas.map(area => `<a href="#/practicar/${area.id}">${escapeHtml(area.title)} <span>→</span></a>`).join("")}</div>` : ""}<div class="result-actions"><button type="button" class="button primary" data-action="restart">Repetir bloque</button><a class="button secondary" href="#/practicar">Elegir otro frente</a></div></section>`;
   }
 
+  function renderScope() {
+    const s = data.scope || {};
+    const cats = s.categories || [];
+    const total = cats.reduce((n, c) => n + c.items.length, 0);
+    app.innerHTML = `
+      <section class="page-intro compact"><p class="kicker">TEMARIO OFICIAL · ALCANCE COMPLETO</p><h1>Todo lo que<br><em>puede entrar.</em></h1><p>${escapeHtml(s.intro || "")}</p></section>
+      <section class="scope-count panel"><strong>${total}</strong><span>servicios in-scope según la guía oficial de AWS · agrupados en ${cats.length} categorías</span></section>
+      <section class="notes-wrap">
+        ${cats.map(c => `<article class="notes-card"><h2>${escapeHtml(c.cat)} <span class="scope-n">${c.items.length}</span></h2><dl class="notes-list">${c.items.map(it => `<div class="notes-row"><dt>${escapeHtml(it[0])}</dt><dd>${escapeHtml(it[1])}</dd></div>`).join("")}</dl></article>`).join("")}
+      </section>
+      <section class="section-heading drill-heading"><div><p class="kicker">SOPORTE</p><h2>Los 5 planes de soporte</h2><p>Ojo: ahora son CINCO (Enterprise On-Ramp es el que muchos olvidan).</p></div></section>
+      <section class="notes-wrap">
+        <article class="notes-card"><dl class="notes-list">${(s.supportPlans || []).map(p => `<div class="notes-row"><dt>${escapeHtml(p[0])}</dt><dd>${escapeHtml(p[1])}</dd></div>`).join("")}</dl></article>
+      </section>
+      <section class="section-heading drill-heading"><div><p class="kicker">CONCEPTOS</p><h2>Conceptos y recursos que también entran</h2></div></section>
+      <section class="notes-wrap">
+        <article class="notes-card"><dl class="notes-list">${(s.concepts || []).map(p => `<div class="notes-row"><dt>${escapeHtml(p[0])}</dt><dd>${escapeHtml(p[1])}</dd></div>`).join("")}</dl></article>
+      </section>
+      <section class="traps-list"><div class="trap-row"><span>✕</span><p>${escapeHtml(s.outOfScope || "")}</p></div></section>
+      <p class="listen-note">💡 No memorices los ~120 servicios: con RECONOCER qué hace cada uno (su palabra gatillo) te basta para la Practitioner. Usa este temario como checklist: lo que no te suene, mándalo a "Aprender", "Tarjetas" o "Practicar".</p>`;
+  }
+
   function renderNotes() {
     const sections = data.examNotes || [];
     app.innerHTML = `
@@ -745,6 +767,7 @@
     else if (route.startsWith("#/aprender/")) renderLearnDomain(Number(route.split("/")[2]));
     else if (route === "#/aprender") renderLearnHome();
     else if (route === "#/examen") renderExam();
+    else if (route === "#/temario") renderScope();
     else if (route === "#/apuntes") renderNotes();
     else if (route === "#/pulir") renderPolish();
     else if (route === "#/chuleta") renderCheatSheet();
